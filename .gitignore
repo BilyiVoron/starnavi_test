@@ -1,0 +1,28 @@
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+starnavi/local_settings.py
+#migrations/
+
+# Django stuff:
+db.sqlite3-journal
+
+# pyenv
+.python-version
+
+# Environments
+venv/
+
+### PyCharm ###
+.idea/
+
+# Text backup files
+*.bak
+
+#Database
+*.sqlite3
+
+# Config (secret)
+*.env
