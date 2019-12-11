@@ -10,7 +10,7 @@ class Post(models.Model):
     title = models.CharField(max_length=150)
     content = models.TextField()
     like = models.BigIntegerField(default=0)
-    dislike = models.BigIntegerField(default=0)
+    unlike = models.BigIntegerField(default=0)
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -20,9 +20,16 @@ class Post(models.Model):
     def __str__(self):
         return "{0}".format(self.title)
 
-    def get_user(self):
-        user = self.owner
-        return user
+    def get_post(self, post_id):
+        Post.objects.get(id=post_id)
+        return 'Post "{0}" has been added.'.format(self.title)
+
+
+class PostLikeUnlike(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post_reaction")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    like = models.BooleanField()
+    unlike = models.BooleanField()
 
 
 class Comment(models.Model):
@@ -30,7 +37,7 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment_body = models.TextField()
     like = models.BigIntegerField(default=0)
-    dislike = models.BigIntegerField(default=0)
+    unlike = models.BigIntegerField(default=0)
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -38,9 +45,15 @@ class Comment(models.Model):
         verbose_name_plural = "Comments"
 
     def __str__(self):
-        return "{0}".format(self.post.title)
+        return self.comment_body
 
-    def get_user(self):
-        user = self.owner
-        return user
+    def get_comment(self, post_id):
+        post = Post.objects.get(id=post_id)
+        return 'Comment "{0}" has been added to post "{1}".'.format(self.comment_body, post.title)
 
+
+class CommentLikeUnlike(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment_reaction")
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    like = models.BooleanField()
+    unlike = models.BooleanField()

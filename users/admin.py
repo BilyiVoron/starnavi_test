@@ -1,30 +1,54 @@
-from django.contrib.auth import get_user_model, forms
-from django.core.exceptions import ValidationError
+from django.contrib import admin
+from django.contrib.auth import admin as auth_admin
+from django.contrib.auth import get_user_model
+from rest_framework.authtoken.models import Token
+from users.forms import UserChangeForm, UserCreationForm
+from allauth.account.admin import EmailAddressAdmin
+from allauth.account.models import EmailAddress
 
 
 User = get_user_model()
 
 
-class UserChangeForm(forms.UserChangeForm):
-    class Meta(forms.UserChangeForm.Meta):
-        model = User
+class UserAdmin(auth_admin.UserAdmin):
+
+    form = UserChangeForm
+    add_form = UserCreationForm
+    list_display = ["username", "is_superuser", "email"]
+    search_fields = ["username"]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
-class UserCreationForm(forms.UserCreationForm):
+class MyEmailAddressAdmin(EmailAddressAdmin):
+    def has_add_permission(self, request):
+        return False
 
-    error_message = forms.UserCreationForm.error_messages.update(
-        {"duplicate_username": "This username has already been taken."}
-    )
+    def has_delete_permission(self, request, obj=None):
+        return False
 
-    class Meta(forms.UserCreationForm.Meta):
-        model = User
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
+class TokenAdmin(admin.ModelAdmin):
+    list_display = ("key", "user", "created")
 
-        try:
-            User.objects.get(username=username)
-        except User.DoesNotExist:
-            return username
+    def has_add_permission(self, request):
+        return False
 
-        raise ValidationError(self.error_messages["duplicate_username"])
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+admin.site.register(User, UserAdmin)
+
+admin.site.unregister(Token)
+admin.site.register(Token, TokenAdmin)
+
+admin.site.unregister(EmailAddress)
+admin.site.register(EmailAddress, MyEmailAddressAdmin)
