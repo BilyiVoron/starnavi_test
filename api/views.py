@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import filters
+from django_filters import rest_framework as rfilters
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import UpdateModelMixin
@@ -23,6 +24,11 @@ User = get_user_model()
 
 
 def update_like_unlike_obj(obj_base: object, obj: object, like: bool, unlike: bool):
+    """
+        Realized Like/Unlike system.
+        User can vote only once:
+        "Like" or "Unlike".
+    """
     if like and not unlike:
         if obj.like:
             obj_base.like -= 1
@@ -48,7 +54,8 @@ def update_like_unlike_obj(obj_base: object, obj: object, like: bool, unlike: bo
 
 class PostListApiView(GenericViewSet, ListAPIView):
     """
-        PostListApiView
+        PostListApiView.
+        Users can see all posts
     """
 
     queryset = Post.objects.all()
@@ -59,7 +66,8 @@ class PostListApiView(GenericViewSet, ListAPIView):
 
 class PostCreateApiView(GenericViewSet, CreateAPIView):
     """
-        PostCreateApiView
+        PostCreateApiView.
+        Authorized users can also add new posts
     """
 
     queryset = Post.objects.all()
@@ -71,7 +79,8 @@ class PostCreateApiView(GenericViewSet, CreateAPIView):
 
 class PostDetailApiView(RetrieveUpdateDestroyAPIView):
     """
-        PostDetailApiView
+        PostDetailApiView.
+        Authorized users can update or delete their posts
     """
 
     queryset = Post.objects.all()
@@ -86,18 +95,21 @@ class PostDetailApiView(RetrieveUpdateDestroyAPIView):
 
 class CommentListApiView(GenericViewSet, ListAPIView):
     """
-        CommentList
+        CommentList.
+        Users can see all post's comments
     """
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, rfilters.DjangoFilterBackend]
+    filterset_fields = ("post",)
     ordering_fields = ["post"]
 
 
 class CommentCreateApiView(GenericViewSet, CreateAPIView):
     """
-        CommentCreateApiView
+        CommentCreateApiView.
+        Authorized users can also add new comments to posts
     """
 
     queryset = Comment.objects.all()
@@ -109,7 +121,8 @@ class CommentCreateApiView(GenericViewSet, CreateAPIView):
 
 class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
     """
-        CommentDetail
+        CommentDetail.
+        Authorized users can update or delete their comments
     """
 
     queryset = Comment.objects.all()
@@ -124,7 +137,8 @@ class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
 
 class PostLikeUnlikeApiView(GenericViewSet, UpdateModelMixin):
     """
-        PostLikeUnlikeApiView
+        PostLikeUnlikeApiView.
+        Authorized users can vote posts by "Like" or "Unlike" buttons
     """
 
     queryset = Post.objects.all()
@@ -161,6 +175,7 @@ class PostLikeUnlikeApiView(GenericViewSet, UpdateModelMixin):
     def update(self, request, *args, **kwargs):
         try:
             post = Post.objects.get(id=kwargs.get("pk", None))
+
             request.data["owner"] = request.user.id
             self.queryset = self.like_unlike(request, post)
             request.data.update(dict(self.serializer_class(self.queryset).data))
@@ -172,7 +187,8 @@ class PostLikeUnlikeApiView(GenericViewSet, UpdateModelMixin):
 
 class CommentLikeUnlikeApiView(GenericViewSet, UpdateModelMixin):
     """
-        CommentLikeUnlikeApiView
+        CommentLikeUnlikeApiView.
+        Authorized users can vote comments by "Like" or "Unlike" buttons
     """
 
     queryset = Comment.objects.all()

@@ -25,4 +25,4 @@ venv/
 *.sqlite3
 
 # Config (secret)
-*.env
+#*.env
