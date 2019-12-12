@@ -7,7 +7,7 @@
  Also wrote unit test using Django Tests for every API endpoint
  
  # INSTRUCTIONS
- 1. First item you have to do is creating PostgreSQL database*:
+ 1. First item you have to do is creating PostgreSQL database***:
 - CREATE DATABASE your_db_name;
 - CREATE USER your_user WITH ENCRYPTED PASSWORD 'your_pass';
 - GRANT ALL PRIVILEGES ON DATABASE your_db_name TO your_user;
@@ -19,5 +19,5 @@
  - python manage.py runserver
  
  
- * you may use my own config from .env file in the root directory 
+ *** you may use my own config from .env file in the root directory 
  or replace them with yours
