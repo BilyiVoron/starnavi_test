@@ -1,5 +1,5 @@
 from django.contrib import admin
-from starnaviapp.models import Post, Comment
+from starnaviapp.models import Post, Comment, PostLikeUnlike, CommentLikeUnlike
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -24,3 +24,6 @@ class CommentAdmin(admin.ModelAdmin):
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Comment, CommentAdmin)
+
+admin.site.register(PostLikeUnlike)
+admin.site.register(CommentLikeUnlike)

@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from starnaviapp.models import Post, Comment
+from starnaviapp.models import Post, Comment, PostLikeUnlike, CommentLikeUnlike
 from rest_framework.exceptions import PermissionDenied
 
 
@@ -32,6 +32,20 @@ class IsPostOwnerOrAdmin(permissions.BasePermission):
         return obj.owner == request.user or request.user.is_staff
 
 
+class IsPostLikeUnlikeOwnerOrAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_staff:
+            return True
+        else:
+            view.queryset = PostLikeUnlike.objects.filter(owner=request.user)
+            if len(view.queryset) == 0:
+                return True
+            return view.queryset
+
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.owner()
+
+
 class IsCommentOwnerOrAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_staff:
@@ -43,4 +57,18 @@ class IsCommentOwnerOrAdmin(permissions.BasePermission):
             return view.queryset
 
     def has_object_permission(self, request, view, obj):
-        return request.user == obj.get_user()
+        return obj.owner == request.user or request.user.is_staff
+
+
+class IsCommentLikeUnlikeOwnerOrAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_staff:
+            return True
+        else:
+            view.queryset = CommentLikeUnlike.objects.filter(owner=request.user)
+            if len(view.queryset) == 0:
+                return True
+            return view.queryset
+
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.owner()
