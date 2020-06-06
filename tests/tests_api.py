@@ -1,9 +1,9 @@
-from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 
-from apps.starnaviapp.models import Post, PostLikeUnlike, Comment, CommentLikeUnlike
+from apps.comments.models import Comment, CommentLikeUnlike
+from apps.posts.models import Post, PostLikeUnlike
 
-User = get_user_model()
+from apps.users.models import User
 
 
 class PostListCreateTests(APITestCase):
@@ -26,9 +26,7 @@ class PostListCreateTests(APITestCase):
         self.assertEqual(
             response.status_code,
             200,
-            "Expected Response Code 200, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 200, received {response.status_code} instead.",
         )
 
     def test_create_post(self):
@@ -45,9 +43,7 @@ class PostListCreateTests(APITestCase):
         self.assertEqual(
             response.status_code,
             201,
-            "Expected Response Code 201, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 201, received {response.status_code} instead.",
         )
 
 
@@ -74,19 +70,17 @@ class PostDetailTests(APITestCase):
         )
 
     def test_retrieve_post(self):
-        response = self.client.get("{0}{1}/".format(self.uri, self.test_post.pk))
+        response = self.client.get(f"{self.uri}{self.test_post.pk}/")
 
         self.assertEqual(
             response.status_code,
             200,
-            "Expected Response Code 200, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 200, received {response.status_code} instead.",
         )
 
     def test_update_post(self):
         response = self.client.put(
-            "{0}{1}/".format(self.uri, self.test_post.pk),
+            f"{self.uri}{self.test_post.pk}/",
             {
                 "owner": self.owner.id,
                 "title": "New post's title",
@@ -98,25 +92,21 @@ class PostDetailTests(APITestCase):
         self.assertEqual(
             response.status_code,
             200,
-            "Expected Response Code 200, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 200, received {response.status_code} instead.",
         )
 
     def test_destroy_post(self):
-        response = self.client.delete("{0}{1}/".format(self.uri, self.test_post.pk))
+        response = self.client.delete(f"{self.uri}{self.test_post.pk}/")
 
         self.assertEqual(
             response.status_code,
             204,
-            "Expected Response Code 204, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 204, received {response.status_code} instead.",
         )
 
     def test_update_post_like_unlike(self):
         response = self.client.post(
-            "{0}{1}/".format(self.uri1, self.test_post.pk),
+            f"{self.uri1}{self.test_post.pk}/",
             {"like": True, "unlike": False},
             format="json",
         )
@@ -124,9 +114,7 @@ class PostDetailTests(APITestCase):
         self.assertEqual(
             response.status_code,
             200,
-            "Expected Response Code 200, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 200, received {response.status_code} instead.",
         )
 
 
@@ -153,9 +141,7 @@ class CommentListCreateTests(APITestCase):
         self.assertEqual(
             response.status_code,
             200,
-            "Expected Response Code 200, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 200, received {response.status_code} instead.",
         )
 
     def test_create_comment(self):
@@ -172,9 +158,7 @@ class CommentListCreateTests(APITestCase):
         self.assertEqual(
             response.status_code,
             201,
-            "Expected Response Code 201, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 201, received {response.status_code} instead.",
         )
 
 
@@ -202,19 +186,17 @@ class CommentDetailTests(APITestCase):
         )
 
     def test_retrieve_comment(self):
-        response = self.client.get("{0}{1}/".format(self.uri, self.test_comment.pk))
+        response = self.client.get(f"{self.uri}{self.test_comment.pk}/")
 
         self.assertEqual(
             response.status_code,
             200,
-            "Expected Response Code 200, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 200, received {response.status_code} instead.",
         )
 
     def test_update_comment(self):
         response = self.client.put(
-            "{0}{1}/".format(self.uri, self.test_comment.pk),
+            f"{self.uri}{self.test_comment.pk}/",
             {
                 "owner": self.owner.id,
                 "post": self.test_post.id,
@@ -226,25 +208,21 @@ class CommentDetailTests(APITestCase):
         self.assertEqual(
             response.status_code,
             200,
-            "Expected Response Code 200, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 200, received {response.status_code} instead.",
         )
 
     def test_destroy_comment(self):
-        response = self.client.delete("{0}{1}/".format(self.uri, self.test_comment.pk))
+        response = self.client.delete(f"{self.uri}{self.test_comment.pk}/")
 
         self.assertEqual(
             response.status_code,
             204,
-            "Expected Response Code 204, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 204, received {response.status_code} instead.",
         )
 
     def test_update_comment_like_unlike(self):
         response = self.client.post(
-            "{0}{1}/".format(self.uri1, self.test_comment.pk),
+            f"{self.uri1}{self.test_comment.pk}/",
             {"like": True, "unlike": False},
             format="json",
         )
@@ -252,7 +230,5 @@ class CommentDetailTests(APITestCase):
         self.assertEqual(
             response.status_code,
             200,
-            "Expected Response Code 200, received {0} instead.".format(
-                response.status_code
-            ),
+            f"Expected Response Code 200, received {response.status_code} instead.",
         )

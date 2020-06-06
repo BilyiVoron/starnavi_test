@@ -1,8 +1,7 @@
-from django.contrib.auth import get_user_model, forms
+from django.contrib.auth import forms
 from django.core.exceptions import ValidationError
 
-
-User = get_user_model()
+from apps.users.models import User
 
 
 class UserChangeForm(forms.UserChangeForm):

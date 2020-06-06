@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django_filters import rest_framework as rfilters
 from rest_framework import filters
 from rest_framework.generics import (
@@ -10,17 +9,18 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from apps.starnaviapp.models import Post, Comment, PostLikeUnlike, CommentLikeUnlike
-from apps.starnaviapp.serializers import (
-    PostSerializer,
-    PostCreateSerializer,
+from apps.comments.models import Comment, CommentLikeUnlike
+from apps.comments.serializers import (
     CommentSerializer,
     CommentCreateSerializer,
-    PostLikeUnlikeSerializer,
     CommentLikeUnlikeSerializer,
 )
-
-User = get_user_model()
+from apps.posts.models import Post, PostLikeUnlike
+from apps.posts.serializers import (
+    PostSerializer,
+    PostCreateSerializer,
+    PostLikeUnlikeSerializer,
+)
 
 
 def update_like_unlike_obj(obj_base: object, obj: object, like: bool, unlike: bool):
@@ -196,7 +196,7 @@ class CommentLikeUnlikeApiView(GenericViewSet, UpdateModelMixin):
 
     @staticmethod
     def create_update_like_unlike(
-            comment: Comment, owner_id: int, like: bool, unlike: bool
+        comment: Comment, owner_id: int, like: bool, unlike: bool
     ):
         try:
             comment_like_unlike = CommentLikeUnlike.objects.get(

@@ -23,3 +23,6 @@ test_env:
 
 test_user:
 	@docker exec -it -w /starnavi_test starnavi_test_api python src/manage.py createsuperuser
+
+test:
+	@docker exec -it -w /starnavi_test starnavi_test_api python src/manage.py test

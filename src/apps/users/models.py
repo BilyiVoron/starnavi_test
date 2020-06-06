@@ -22,7 +22,7 @@ class MyUserManager(UserManager):
                 user=user, email=email, primary=True, verified=True
             )
         except Exception as e:
-            print("UserManager _create_user: {0}".format(e))
+            print(f"UserManager _create_user: {e}")
 
         return user
 
@@ -51,4 +51,4 @@ class User(AbstractUser):
         verbose_name_plural = "Users"
 
     def __str__(self):
-        return "{0}".format(self.username)
+        return f"{self.username}"

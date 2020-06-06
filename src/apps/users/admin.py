@@ -2,14 +2,14 @@ from allauth.account.admin import EmailAddressAdmin
 from allauth.account.models import EmailAddress
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
-from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
 from apps.users.forms import UserChangeForm, UserCreationForm
 
-User = get_user_model()
+from apps.users.models import User
 
 
+@admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
 
     form = UserChangeForm
@@ -23,6 +23,10 @@ class UserAdmin(auth_admin.UserAdmin):
         return False
 
 
+admin.site.unregister(Token)
+
+
+@admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
     list_display = ("key", "user", "created")
 
@@ -36,6 +40,10 @@ class TokenAdmin(admin.ModelAdmin):
         return False
 
 
+admin.site.unregister(EmailAddress)
+
+
+@admin.register(EmailAddress)
 class MyEmailAddressAdmin(EmailAddressAdmin):
     def has_add_permission(self, request):
         return False
@@ -47,10 +55,10 @@ class MyEmailAddressAdmin(EmailAddressAdmin):
         return False
 
 
-admin.site.register(User, UserAdmin)
-
-admin.site.unregister(Token)
-admin.site.register(Token, TokenAdmin)
-
-admin.site.unregister(EmailAddress)
-admin.site.register(EmailAddress, MyEmailAddressAdmin)
+# admin.site.register(User, UserAdmin)
+#
+# admin.site.unregister(Token)
+# admin.site.register(Token, TokenAdmin)
+#
+# admin.site.unregister(EmailAddress)
+# admin.site.register(EmailAddress, MyEmailAddressAdmin)

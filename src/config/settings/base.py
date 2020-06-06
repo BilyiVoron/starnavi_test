@@ -98,8 +98,9 @@ INSTALLED_APPS = [
     "drf_yasg",
     "django_filters",
     # local apps
+    "apps.posts",
+    "apps.comments",
     "apps.api",
-    "apps.starnaviapp",
     "apps.users",
 ]
 

@@ -1,10 +1,10 @@
 from model_mommy import mommy
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 
-from apps.starnaviapp.models import Post, Comment
 
-User = get_user_model()
+from apps.comments.models import Comment
+from apps.posts.models import Post
+from apps.users.models import User
 
 
 class CommentTestModel(TestCase):

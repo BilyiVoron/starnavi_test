@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from apps.starnaviapp.models import User
+from apps.users.models import User
 
 
 class UserAPITest(APITestCase):
