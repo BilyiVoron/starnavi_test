@@ -7,17 +7,49 @@
  Also wrote unit test using Django Tests for every API endpoint
  
  # INSTRUCTIONS
- 1. First item you have to do is creating PostgreSQL database***:
-- CREATE DATABASE your_db_name;
-- CREATE USER your_user WITH ENCRYPTED PASSWORD 'your_pass';
-- GRANT ALL PRIVILEGES ON DATABASE your_db_name TO your_user;
- 2. Then you have to sync database using command:
- - python manage.py migrate
- 3. The next step is creating superuser to have possibility use Django admin panel:
- - python manage.py createsuperuser
- 4. At least you have to start your app on a local server
- - python manage.py runserver
- 
- 
- *** you may use my own config from .env file in the root directory 
- or replace them with yours
+
+# Setup
+
+#### Create local env file
+
+Just run `make test_env`
+
+
+#### Build containers
+
+`docker-compose -f docker-compose-dev.yml build`
+
+#### Remove containers
+
+`docker-compose -f docker-compose-dev.yml down --remove-orphans`
+
+#### Before running project
+
+- Create local env file
+- Build containers
+- Run project
+
+#### Run project
+
+`docker-compose -f docker-compose-dev.yml up`
+
+
+#### When project is running
+
+- Apply db migrations `make migrations`
+- Create superuser `make test_user`. After that you will be able to login into Admin
+- Be happy
+
+#### Create new app
+
+`make app name=<app_name>`
+
+### Project description
+
+This is simple project just to demonstrate basic concept of Django.
+
+- You are able to see Django Admin and create some articles in DB.
+- You can search recently added articles on /articles/search/ page. 
+And see the results on /articles/results/ page.
+
+#### All commands you can find in `Makefile`

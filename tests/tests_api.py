@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 
-from starnaviapp.models import Post, Comment, PostLikeUnlike, CommentLikeUnlike
+from apps.starnaviapp.models import Post, PostLikeUnlike, Comment, CommentLikeUnlike
 
 User = get_user_model()
 
