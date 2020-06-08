@@ -15,8 +15,9 @@ POSTGRES_PASSWORD=starnavi_password
 POSTGRES_USER=starnavi_user
 POSTGRES_DB=starnavi_db
 
-MEDIA_ROOT=src/media
-STATIC_ROOT=src/static
+MEDIA_ROOT=media
+STATIC_ROOT=staticfiles
+STATICFILES_DIRS=static
 
 LANGUAGE_CODE=en-us
 ALLOWED_HOSTS=*, 127.0.0.1, localhost

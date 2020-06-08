@@ -5,6 +5,9 @@ migrations:
 migrate:
 	@docker exec -it -w /starnavi_test starnavi_test_api python src/manage.py migrate
 
+collectstatic:
+	@docker exec -it -w /starnavi_test starnavi_test_api python src/manage.py collectstatic
+
 app:
 	@mkdir -p src/apps/$(name)
 	@docker exec -it -w /starnavi_test starnavi_test_api python src/manage.py startapp $(name) src/apps/$(name)

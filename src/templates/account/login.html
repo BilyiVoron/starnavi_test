@@ -1,0 +1,72 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Login" %}{% endblock %}
+
+{% block inner %}
+    <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
+        <span class="login100-form-title p-b-49">{% trans "Sign In" %}</span>
+
+        <form class="login login100-form validate-form" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+
+            <div class="wrap-input100 validate-input m-b-23" data-validate="{% trans 'Username is required' %}">
+                <span class="label-input100">{% trans "Username" %}</span>
+                <input class="input100" type="text" name="login"
+                       placeholder="{% trans 'Username' %}" autofocus="autofocus"
+                       maxlength="150" required="" id="id_login">
+                <span class="focus-input100" data-symbol="&#xf206;"></span>
+            </div>
+
+            <div class="wrap-input100 validate-input" data-validate="{% trans 'Password is required' %}">
+                <span class="label-input100">{% trans "Password" %}</span>
+                <input class="input100" type="password" name="password"
+                       placeholder="{% trans 'Password' %}"
+                       required="" id="id_password">
+                <span class="focus-input100" data-symbol="&#xf190;"></span>
+            </div>
+
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+            {% endif %}
+
+            <div class="text-right p-t-8 p-b-31">
+                <a href="{% url 'account_reset_password' %}">
+                    {% trans "Forgot Password?" %}
+                </a>
+            </div>
+
+            <div class="container-login100-form-btn">
+                <div class="wrap-login100-form-btn">
+                    <div class="login100-form-bgbtn"></div>
+                    <button class="login100-form-btn" type="submit">
+                        {% trans "Sign In" %}
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        {% get_providers as socialaccount_providers %}
+        {% if socialaccount_providers %}
+            <div class="txt1 text-center p-t-54 p-b-20">
+                <span>{% trans "Or Sign Up Using" %}</span>
+            </div>
+
+            <div class="flex-c-m">
+                {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+            </div>
+
+            {% include "socialaccount/snippets/login_extra.html" %}
+        {% endif %}
+
+        <div class="flex-col-c p-t-15">
+            <span class="txt1 p-b-17">{% trans "Or Sign Up Using" %}</span>
+
+            <a href="{% url 'account_signup' %}" class="txt2">
+                {% trans "Sign Up" %}
+            </a>
+        </div>
+    </div>
+{% endblock %}

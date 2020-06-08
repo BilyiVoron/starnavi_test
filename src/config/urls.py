@@ -6,6 +6,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from common.views import home_page
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,7 +27,7 @@ urlpatterns = [
     # User management
     path("rest-auth/registration/", include("rest_auth.registration.urls")),
     path("rest-auth/", include("rest_auth.urls")),
-    # path("", home_page, name="homepage"),
+    path("", home_page, name="homepage"),
     path("", include("allauth.urls")),
     # API
     path("api/", include("apps.api.urls", namespace="api_v1_starnavi")),

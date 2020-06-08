@@ -1,0 +1,73 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block inner %}
+<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
+    <span class="login100-form-title p-b-49">{% trans "Sign Up" %}</span>
+    {% if form.errors %}
+    {% for field in form %}
+    {% for error in field.errors %}
+    <div class="alert alert-error">
+        <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-error">
+        <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <form class="login login100-form validate-form" method="POST" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+
+        <div class="wrap-input100 validate-input m-b-23" data-validate="{% trans 'E-mail is required' %}">
+            <span class="label-input100">{% trans "E-mail" %}</span>
+            <input class="input100" type="email" name="email"
+                   placeholder="{% trans 'E-mail' %}"
+                   required="" id="id_email">
+            <span class="focus-input100" data-symbol="&#xf206;"></span>
+        </div>
+
+        <div class="wrap-input100 validate-input m-b-23" data-validate="{% trans 'Username is required' %}">
+            <span class="label-input100">{% trans "Username" %}</span>
+            <input class="input100" type="text" name="username"
+                   placeholder="{% trans 'Username' %}" autofocus="autofocus"
+                   minlength="1" maxlength="150" required="" id="id_username">
+            <span class="focus-input100" data-symbol="&#xf206;"></span>
+        </div>
+
+        <div class="wrap-input100 validate-input" data-validate="{% trans 'Password is required' %}">
+            <span class="label-input100">{% trans "Password" %}</span>
+            <input class="input100" type="password" name="password1"
+                   placeholder="{% trans 'Password' %}"
+                   required="" id="id_password1">
+            <span class="focus-input100" data-symbol="&#xf190;"></span>
+        </div>
+
+        <div class="wrap-input100 validate-input" data-validate="{% trans 'Password (again) is required '%}">
+            <span class="label-input100">{% trans "Password (again)" %}</span>
+            <input class="input100" type="password" name="password2"
+                   placeholder="{% trans 'Password (again)' %}"
+                   required="" id="id_password2">
+            <span class="focus-input100" data-symbol="&#xf190;"></span>
+        </div>
+
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+        {% endif %}
+
+        <div class="container-login100-form-btn p-t-50">
+            <div class="wrap-login100-form-btn">
+                <div class="login100-form-bgbtn"></div>
+                <button class="login100-form-btn" type="submit">
+                    {% trans "Sign Up" %}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

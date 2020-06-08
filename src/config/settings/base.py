@@ -19,11 +19,11 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 
-# import dj_database_url
-# from decouple import config, UndefinedValueError
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_BASE_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -94,9 +94,11 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.facebook",
     "rest_auth.registration",
     "drf_yasg",
     "django_filters",
+    "crispy_forms",
     # local apps
     "apps.posts",
     "apps.comments",
@@ -161,11 +163,13 @@ MIDDLEWARE = [
 # STATIC
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/3.0/ref/settings/#static-root
-STATIC_ROOT = env.str("STATIC_ROOT", BASE_DIR)
+STATIC_ROOT = os.path.join(env.str("STATIC_ROOT", STATIC_BASE_DIR))
+# STATIC_ROOT = os.path.join(BASE_DIR, "../staticfiles")
 # https://docs.djangoproject.com/en/3.0/ref/settings/#static-url
 STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_DIRS
-# STATICFILES_DIRS = env.str("STATIC_ROOT", BASE_DIR)
+STATICFILES_DIRS = [os.path.join(env.str("STATICFILES_DIRS", STATIC_BASE_DIR))]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "../static")]
 # https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_FINDERS
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -177,7 +181,7 @@ STATICFILES_FINDERS = [
 # MEDIA
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/3.0/ref/settings/#media-root
-MEDIA_ROOT = env.str("MEDIA_ROOT", BASE_DIR)
+MEDIA_ROOT = env.str("MEDIA_ROOT", STATIC_BASE_DIR)
 # https://docs.djangoproject.com/en/3.0/ref/settings/#media-url
 MEDIA_URL = "/media/"
 
@@ -221,6 +225,35 @@ CSRF_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
 # https://docs.djangoproject.com/en/3.0/ref/settings/#x-frame-options
 X_FRAME_OPTIONS = "DENY"
+
+# django-allauth
+# ------------------------------------------------------------------------------
+ACCOUNT_ALLOW_REGISTRATION = True
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_AUTHENTICATION_METHOD = "username"
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_EMAIL_REQUIRED = True
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_ADAPTER = "users.adapters.AccountAdapter"
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+SOCIALACCOUNT_ADAPTER = "users.adapters.SocialAccountAdapter"
+
+# FaceBook Auth
+# ------------------------------------------------------------------------------
+# SOCIAL_AUTH_FACEBOOK_KEY = config("FACEBOOK_APP_ID")
+# SOCIAL_AUTH_FACEBOOK_SECRET = config("FACEBOOK_APP_SECRET")
+SOCIAL_AUTH_FACEBOOK_SCOPE = ["email", "user_link"]
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    "fields": "id, name, email, picture.type(large), link"
+}
+SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [
+    ("name", "name"),
+    ("email", "email"),
+    ("picture", "picture"),
+    ("link", "profile_url"),
+]
 
 # rest_framework
 # ------------------------------------------------------------------------------
