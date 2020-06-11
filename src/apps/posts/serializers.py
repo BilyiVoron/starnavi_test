@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.posts.models import Post, PostLikeUnlike
+from apps.posts.models import Post, PostUserReaction
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ("id", "owner", "title", "content", "like", "unlike", "created_at")
 
 
-class PostLikeUnlikeSerializer(serializers.ModelSerializer):
+class PostUserReactionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PostLikeUnlike
+        model = PostUserReaction
         fields = ("id", "owner", "post", "like", "unlike")

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.posts.models import Post, PostLikeUnlike
+from apps.posts.models import Post, PostUserReaction
 
 
 @admin.register(Post)
@@ -14,6 +14,6 @@ class PostAdmin(admin.ModelAdmin):
         return True
 
 
-@admin.register(PostLikeUnlike)
-class PostLikeUnlikeAdmin(admin.ModelAdmin):
+@admin.register(PostUserReaction)
+class PostUserReactionAdmin(admin.ModelAdmin):
     pass

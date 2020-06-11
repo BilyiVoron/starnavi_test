@@ -163,13 +163,13 @@ MIDDLEWARE = [
 # STATIC
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/3.0/ref/settings/#static-root
-STATIC_ROOT = os.path.join(env.str("STATIC_ROOT", STATIC_BASE_DIR))
-# STATIC_ROOT = os.path.join(BASE_DIR, "../staticfiles")
+# STATIC_ROOT = os.path.join(env.str("STATIC_ROOT", STATIC_BASE_DIR))
+STATIC_ROOT = os.path.join(BASE_DIR, "../staticfiles")
 # https://docs.djangoproject.com/en/3.0/ref/settings/#static-url
 STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_DIRS
-STATICFILES_DIRS = [os.path.join(env.str("STATICFILES_DIRS", STATIC_BASE_DIR))]
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "../static")]
+# STATICFILES_DIRS = [os.path.join(env.str("STATICFILES_DIRS", STATIC_BASE_DIR))]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "../static")]
 # https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_FINDERS
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",

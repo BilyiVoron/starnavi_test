@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase, APIClient
 
-from apps.comments.models import Comment, CommentLikeUnlike
-from apps.posts.models import Post, PostLikeUnlike
+from apps.comments.models import Comment, CommentUserReaction
+from apps.posts.models import Post, PostUserReaction
 
 from apps.users.models import User
 
@@ -58,7 +58,7 @@ class PostDetailTests(APITestCase):
             content="Some post's description",
             owner=self.owner,
         )
-        self.test_like_or_unlike = PostLikeUnlike.objects.create(
+        self.test_like_or_unlike = PostUserReaction.objects.create(
             owner=self.owner, post=self.test_post, like=False, unlike=False
         )
         self.client.force_authenticate(user=self.owner)
@@ -174,7 +174,7 @@ class CommentDetailTests(APITestCase):
         self.test_comment = Comment.objects.create(
             comment_body="Some post's comment", owner=self.owner, post=self.test_post
         )
-        self.test_like_or_unlike = CommentLikeUnlike.objects.create(
+        self.test_like_or_unlike = CommentUserReaction.objects.create(
             owner=self.owner, comment=self.test_comment, like=False, unlike=False
         )
         self.client.force_authenticate(user=self.owner)

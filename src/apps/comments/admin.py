@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.comments.models import Comment, CommentLikeUnlike
+from apps.comments.models import Comment, CommentUserReaction
 
 
 @admin.register(Comment)
@@ -14,6 +14,6 @@ class CommentAdmin(admin.ModelAdmin):
         return True
 
 
-@admin.register(CommentLikeUnlike)
-class CommentLikeUnlikeAdmin(admin.ModelAdmin):
+@admin.register(CommentUserReaction)
+class CommentUserReactionAdmin(admin.ModelAdmin):
     pass

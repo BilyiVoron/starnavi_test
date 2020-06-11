@@ -1,15 +1,16 @@
 from allauth.account.models import EmailAddress
 from django.contrib.auth.models import AbstractUser, UserManager
+from django.utils.translation import gettext as _
 
 
-class MyUserManager(UserManager):
+class UserManager(UserManager):
     def _create_user(self, username, email, password, **extra_fields):
         """
             Create and save a user with the given username, email, and password.
         """
 
         if not username:
-            raise ValueError("The given username must be set")
+            raise ValueError(_("The given username must be set"))
 
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
@@ -36,15 +37,15 @@ class MyUserManager(UserManager):
         extra_fields.setdefault("is_superuser", True)
 
         if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True.")
+            raise ValueError(_("Superuser must have is_staff=True."))
         if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Superuser must have is_superuser=True.")
+            raise ValueError(_("Superuser must have is_superuser=True."))
 
         return self._create_user(username, email, password, **extra_fields)
 
 
 class User(AbstractUser):
-    objects = MyUserManager()
+    objects = UserManager()
 
     class Meta:
         verbose_name = "User"

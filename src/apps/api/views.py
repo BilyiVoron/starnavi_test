@@ -9,21 +9,21 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from apps.comments.models import Comment, CommentLikeUnlike
+from apps.comments.models import Comment, CommentUserReaction
 from apps.comments.serializers import (
     CommentSerializer,
     CommentCreateSerializer,
-    CommentLikeUnlikeSerializer,
+    CommentUserReactionSerializer,
 )
-from apps.posts.models import Post, PostLikeUnlike
+from apps.posts.models import Post, PostUserReaction
 from apps.posts.serializers import (
     PostSerializer,
     PostCreateSerializer,
-    PostLikeUnlikeSerializer,
+    PostUserReactionSerializer,
 )
 
 
-def update_like_unlike_obj(obj_base: object, obj: object, like: bool, unlike: bool):
+def update_reaction_obj(obj_base: object, obj: object, like: bool, unlike: bool):
     """
         Realized Like/Unlike system.
         User can vote only once:
@@ -85,7 +85,9 @@ class PostDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    http_method_names = ["get", "put", "delete"]
+
+    def get_queryset(self):
+        return Post.objects.filter(owner=self.request.user)
 
     def update(self, request, *args, **kwargs):
         request.data["owner"] = self.request.user.id
@@ -127,7 +129,9 @@ class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    http_method_names = ["get", "put", "delete"]
+
+    def get_queryset(self):
+        return Comment.objects.filter(owner=self.request.user)
 
     def update(self, request, *args, **kwargs):
         request.data["owner"] = self.request.user.id
@@ -135,49 +139,52 @@ class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
         return response
 
 
-class PostLikeUnlikeApiView(GenericViewSet, UpdateModelMixin):
+class PostUserReactionApiView(GenericViewSet, UpdateModelMixin):
     """
         PostLikeUnlikeApiView.
         Authorized users can vote posts by "Like" or "Unlike" buttons
     """
 
     queryset = Post.objects.all()
-    serializer_class = PostLikeUnlikeSerializer
+    serializer_class = PostUserReactionSerializer
 
     @staticmethod
-    def create_update_like_unlike(post: Post, owner_id: int, like: bool, unlike: bool):
+    def create_update_reaction(post: Post, owner_id: int, like: bool, unlike: bool):
         try:
-            post_like_unlike = PostLikeUnlike.objects.get(post=post, owner_id=owner_id)
-            post_like_unlike = update_like_unlike_obj(
-                obj_base=post, obj=post_like_unlike, like=like, unlike=unlike
+            post_reaction = PostUserReaction.objects.get(post=post, owner_id=owner_id)
+            post_reaction = update_reaction_obj(
+                obj_base=post, obj=post_reaction, like=like, unlike=unlike
             )
-        except PostLikeUnlike.DoesNotExist:
-            post_like_unlike = PostLikeUnlike()
-            post_like_unlike.post = post
-            post_like_unlike.owner_id = owner_id
-            post_like_unlike = update_like_unlike_obj(
-                obj_base=post, obj=post_like_unlike, like=like, unlike=unlike
+        except PostUserReaction.DoesNotExist:
+            post_reaction = PostUserReaction()
+            post_reaction.post = post
+            post_reaction.owner_id = owner_id
+            post_reaction = update_reaction_obj(
+                obj_base=post, obj=post_reaction, like=like, unlike=unlike
             )
-        return post_like_unlike
+        return post_reaction
 
-    def like_unlike(self, request, post):
+    def reaction(self, request, post):
         owner_id = request.data.get("owner", None)
         like = request.data.get("like", False)
         unlike = request.data.get("unlike", False)
-        post_like_unlike = self.create_update_like_unlike(
+        post_reaction = self.create_update_reaction(
             post=post, owner_id=owner_id, like=like, unlike=unlike
         )
-        return post_like_unlike
+        return post_reaction
 
     def get_object(self):
         return self.queryset
+
+    def get_queryset(self):
+        return Post.objects.filter(owner=self.request.user)
 
     def update(self, request, *args, **kwargs):
         try:
             post = Post.objects.get(id=kwargs.get("pk", None))
 
             request.data["owner"] = request.user.id
-            self.queryset = self.like_unlike(request, post)
+            self.queryset = self.reaction(request, post)
             request.data.update(dict(self.serializer_class(self.queryset).data))
             response = super().update(request, *args, **kwargs)
             return response
@@ -185,52 +192,55 @@ class PostLikeUnlikeApiView(GenericViewSet, UpdateModelMixin):
             return Response(data={"detail": "Not found"}, status=500)
 
 
-class CommentLikeUnlikeApiView(GenericViewSet, UpdateModelMixin):
+class CommentUserReactionApiView(GenericViewSet, UpdateModelMixin):
     """
         CommentLikeUnlikeApiView.
         Authorized users can vote comments by "Like" or "Unlike" buttons
     """
 
     queryset = Comment.objects.all()
-    serializer_class = CommentLikeUnlikeSerializer
+    serializer_class = CommentUserReactionSerializer
 
     @staticmethod
-    def create_update_like_unlike(
+    def create_update_reaction(
         comment: Comment, owner_id: int, like: bool, unlike: bool
     ):
         try:
-            comment_like_unlike = CommentLikeUnlike.objects.get(
+            comment_reaction = CommentUserReaction.objects.get(
                 comment=comment, owner_id=owner_id
             )
-            comment_like_unlike = update_like_unlike_obj(
-                obj_base=comment, obj=comment_like_unlike, like=like, unlike=unlike
+            comment_reaction = update_reaction_obj(
+                obj_base=comment, obj=comment_reaction, like=like, unlike=unlike
             )
-        except CommentLikeUnlike.DoesNotExist:
-            comment_like_unlike = CommentLikeUnlike()
-            comment_like_unlike.comment = comment
-            comment_like_unlike.owner_id = owner_id
-            comment_like_unlike = update_like_unlike_obj(
-                obj_base=comment, obj=comment_like_unlike, like=like, unlike=unlike
+        except CommentUserReaction.DoesNotExist:
+            comment_reaction = CommentUserReaction()
+            comment_reaction.comment = comment
+            comment_reaction.owner_id = owner_id
+            comment_reaction = update_reaction_obj(
+                obj_base=comment, obj=comment_reaction, like=like, unlike=unlike
             )
-        return comment_like_unlike
+        return comment_reaction
 
-    def like_unlike(self, request, comment):
+    def reaction(self, request, comment):
         owner_id = request.data.get("owner", None)
         like = request.data.get("like", False)
         unlike = request.data.get("unlike", False)
-        comment_like_unlike = self.create_update_like_unlike(
+        comment_reaction = self.create_update_reaction(
             comment=comment, owner_id=owner_id, like=like, unlike=unlike
         )
-        return comment_like_unlike
+        return comment_reaction
 
     def get_object(self):
         return self.queryset
+
+    def get_queryset(self):
+        return Comment.objects.filter(owner=self.request.user)
 
     def update(self, request, *args, **kwargs):
         try:
             comment = Comment.objects.get(id=kwargs.get("pk", None))
             request.data["owner"] = request.user.id
-            self.queryset = self.like_unlike(request, comment)
+            self.queryset = self.reaction(request, comment)
             request.data.update(dict(self.serializer_class(self.queryset).data))
             response = super().update(request, *args, **kwargs)
             return response

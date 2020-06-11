@@ -8,35 +8,41 @@ class Post(BaseDateAuditModel):
     owner = models.ForeignKey("users.User", on_delete=models.CASCADE)
     title = models.CharField(max_length=150)
     content = models.TextField()
-    like = models.BigIntegerField(default=0)
-    unlike = models.BigIntegerField(default=0)
+    like = models.PositiveIntegerField(default=0)
+    unlike = models.PositiveIntegerField(default=0)
+    reactions = models.ManyToManyField("PostUserReaction", related_name="post_reactions")
 
     class Meta:
         verbose_name = "Post"
         verbose_name_plural = "Posts"
 
         indexes = [
+            Index(fields=["title"]),
             Index(fields=["created_at"]),
             Index(fields=["owner", "created_at"]),
         ]
 
+    @property
+    def count_reaction(self):
+        if self.like and not self.unlike:
+            return self.like + 1
+        elif self.unlike and not self.like:
+            return self.unlike + 1
+
     def __str__(self):
         return f"{self.title}"
 
-    def get_post(self, post_id):
-        Post.objects.get(id=post_id)
-        return f'Post "{self.title}" has been added.'
 
-
-class PostLikeUnlike(models.Model):
+class PostUserReaction(models.Model):
     owner = models.ForeignKey("users.User", on_delete=models.CASCADE)
     post = models.ForeignKey("Post", on_delete=models.CASCADE)
     like = models.BooleanField(default=False)
     unlike = models.BooleanField(default=False)
+    objects = Post.count_reaction
 
     class Meta:
-        verbose_name = "PostLikeUnlike"
-        verbose_name_plural = "PostLikeUnlikes"
+        verbose_name = "PostUserReaction"
+        verbose_name_plural = "PostUserReactions"
 
         indexes = [
             Index(fields=["owner", "post"]),

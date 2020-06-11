@@ -1,7 +1,6 @@
 from model_mommy import mommy
 from django.test import TestCase
 
-
 from apps.comments.models import Comment
 from apps.posts.models import Post
 from apps.users.models import User
@@ -15,25 +14,20 @@ class CommentTestModel(TestCase):
     def setUp(self):
         self.test_user = mommy.make(User)
 
-        test_post = Post.objects.create(
+        self.test_post = Post.objects.create(
             title="Attention!", content="Awesome!", owner=self.test_user
         )
 
-        mommy.make(Comment, comment_body="Awful!", post=test_post, owner=self.test_user)
+        mommy.make(
+            Comment, comment_body="Awful!", post=self.test_post, owner=self.test_user
+        )
 
     def test_add_post_comment(self):
-        test_post = Post.objects.create(
-            title="Attention!", content="Awesome!", owner=self.test_user
-        )
-
         test_comment = Comment.objects.create(
-            comment_body="Awful!", post=test_post, owner=self.test_user
+            comment_body="Awful!", post=self.test_post, owner=self.test_user
         )
 
-        self.assertEqual(
-            test_comment.get_comment(post_id=test_post.id),
-            'Comment "Awful!" has been added to post "Attention!".',
-        )
+        self.assertEqual(test_comment.__str__(), "Awful!")
 
     def test_remove_post_comment(self):
         test_comment = Comment.objects.get(comment_body="Awful!")
@@ -60,9 +54,7 @@ class PostTestModel(TestCase):
             title="Attention!", content="Awesome!", owner=self.test_user
         )
 
-        self.assertEqual(
-            test_post.get_post(post_id=test_post.id), 'Post "Attention!" has been added.'
-        )
+        self.assertEqual(test_post.__str__(), "Attention!")
 
     def test_remove_post(self):
         test_post = Post.objects.get(

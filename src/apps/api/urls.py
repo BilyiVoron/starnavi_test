@@ -7,12 +7,11 @@ from apps.api.views import (
     CommentListApiView,
     CommentCreateApiView,
     CommentDetailApiView,
-    PostLikeUnlikeApiView,
-    CommentLikeUnlikeApiView,
+    PostUserReactionApiView,
+    CommentUserReactionApiView,
 )
 
 app_name = "api"
-
 
 urlpatterns = [
     path("posts/", PostListApiView.as_view({"get": "list"}), name="posts_list"),
@@ -33,12 +32,12 @@ urlpatterns = [
     path("comments/<int:pk>/", CommentDetailApiView.as_view(), name="comment_detail"),
     path(
         "post_like_unlike/<int:pk>/",
-        PostLikeUnlikeApiView.as_view({"post": "update"}),
+        PostUserReactionApiView.as_view({"post": "update"}),
         name="post_like_unlike",
     ),
     path(
         "comment_like_unlike/<int:pk>/",
-        CommentLikeUnlikeApiView.as_view({"post": "update"}),
+        CommentUserReactionApiView.as_view({"post": "update"}),
         name="comment_like_unlike",
     ),
 ]

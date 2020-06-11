@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.comments.models import Comment, CommentLikeUnlike
+from apps.comments.models import Comment, CommentUserReaction
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         fields = ("post", "comment_body")
 
 
-class CommentLikeUnlikeSerializer(serializers.ModelSerializer):
+class CommentUserReactionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CommentLikeUnlike
+        model = CommentUserReaction
         fields = ("id", "owner", "comment", "like", "unlike")
