@@ -23,7 +23,36 @@ from apps.posts.serializers import (
 )
 
 
-def update_reaction_obj(obj_base: object, obj: object, like: bool, unlike: bool):
+def update_reaction_post(obj_base: PostUserReaction, obj: PostUserReaction, like: bool, unlike: bool):
+    """
+        Realized Like/Unlike system.
+        User can vote only once:
+        "Like" or "Unlike".
+    """
+    if like and not unlike:
+        if obj.like:
+            obj_base.like -= 1
+            obj.like = False
+            obj.unlike = False
+        else:
+            obj_base.like += 1
+            obj.like = True
+            obj.unlike = False
+    elif unlike and not like:
+        if obj.unlike:
+            obj_base.unlike -= 1
+            obj.like = False
+            obj.unlike = False
+        else:
+            obj_base.unlike += 1
+            obj.like = False
+            obj.unlike = True
+    obj_base.save()
+    obj.save()
+    return obj
+
+
+def update_reaction_comment(obj_base: CommentUserReaction, obj: CommentUserReaction, like: bool, unlike: bool):
     """
         Realized Like/Unlike system.
         User can vote only once:
@@ -149,17 +178,17 @@ class PostUserReactionApiView(GenericViewSet, UpdateModelMixin):
     serializer_class = PostUserReactionSerializer
 
     @staticmethod
-    def create_update_reaction(post: Post, owner_id: int, like: bool, unlike: bool):
+    def create_update_reaction(post: PostUserReaction, owner_id: int, like: bool, unlike: bool):
         try:
             post_reaction = PostUserReaction.objects.get(post=post, owner_id=owner_id)
-            post_reaction = update_reaction_obj(
+            post_reaction = update_reaction_post(
                 obj_base=post, obj=post_reaction, like=like, unlike=unlike
             )
         except PostUserReaction.DoesNotExist:
             post_reaction = PostUserReaction()
             post_reaction.post = post
             post_reaction.owner_id = owner_id
-            post_reaction = update_reaction_obj(
+            post_reaction = update_reaction_post(
                 obj_base=post, obj=post_reaction, like=like, unlike=unlike
             )
         return post_reaction
@@ -203,20 +232,20 @@ class CommentUserReactionApiView(GenericViewSet, UpdateModelMixin):
 
     @staticmethod
     def create_update_reaction(
-        comment: Comment, owner_id: int, like: bool, unlike: bool
+        comment: CommentUserReaction, owner_id: int, like: bool, unlike: bool
     ):
         try:
             comment_reaction = CommentUserReaction.objects.get(
                 comment=comment, owner_id=owner_id
             )
-            comment_reaction = update_reaction_obj(
+            comment_reaction = update_reaction_comment(
                 obj_base=comment, obj=comment_reaction, like=like, unlike=unlike
             )
         except CommentUserReaction.DoesNotExist:
             comment_reaction = CommentUserReaction()
             comment_reaction.comment = comment
             comment_reaction.owner_id = owner_id
-            comment_reaction = update_reaction_obj(
+            comment_reaction = update_reaction_comment(
                 obj_base=comment, obj=comment_reaction, like=like, unlike=unlike
             )
         return comment_reaction
