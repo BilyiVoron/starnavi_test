@@ -38,7 +38,6 @@ class PostUserReaction(models.Model):
     post = models.ForeignKey("Post", on_delete=models.CASCADE)
     like = models.BooleanField(default=False)
     unlike = models.BooleanField(default=False)
-    objects = Post.count_reaction
 
     class Meta:
         verbose_name = "PostUserReaction"
