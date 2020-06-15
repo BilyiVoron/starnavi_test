@@ -22,12 +22,12 @@ class Post(BaseDateAuditModel):
             Index(fields=["owner", "created_at"]),
         ]
 
-    @property
-    def count_reaction(self):
-        if self.like and not self.unlike:
-            return self.like + 1
-        elif self.unlike and not self.like:
-            return self.unlike + 1
+    # @property
+    # def count_reaction(self):
+    #     if self.like and not self.unlike:
+    #         return self.like + 1
+    #     elif self.unlike and not self.like:
+    #         return self.unlike + 1
 
     def __str__(self):
         return f"{self.title}"
