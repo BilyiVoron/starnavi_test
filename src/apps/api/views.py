@@ -23,7 +23,9 @@ from apps.posts.serializers import (
 )
 
 
-def update_reaction_post(obj_base: PostUserReaction, obj: PostUserReaction, like: bool, unlike: bool):
+def update_reaction_post(
+    obj_base: PostUserReaction, obj: PostUserReaction, like: bool, unlike: bool
+):
     """
         Realized Like/Unlike system.
         User can vote only once:
@@ -52,7 +54,9 @@ def update_reaction_post(obj_base: PostUserReaction, obj: PostUserReaction, like
     return obj
 
 
-def update_reaction_comment(obj_base: CommentUserReaction, obj: CommentUserReaction, like: bool, unlike: bool):
+def update_reaction_comment(
+    obj_base: CommentUserReaction, obj: CommentUserReaction, like: bool, unlike: bool
+):
     """
         Realized Like/Unlike system.
         User can vote only once:
@@ -176,6 +180,17 @@ class PostUserReactionApiView(GenericViewSet, UpdateModelMixin):
 
     queryset = Post.objects.all()
     serializer_class = PostUserReactionSerializer
+
+    # @staticmethod
+    # def create_update_reaction(reaction: PostUserReaction):
+    #     reaction = PostUserReaction.objects.update_or_create(
+    #         like=True, unlike=False, defaults={"like": "False", "unlike": "False"},
+    #     )
+    #     return reaction
+    #
+    # def reaction(self, reaction):
+    #     reaction = self.create_update_reaction(reaction=reaction)
+    #     return reaction
 
     @staticmethod
     def create_update_reaction(post: PostUserReaction, owner_id: int, like: bool, unlike: bool):
