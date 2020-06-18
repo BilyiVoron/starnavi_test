@@ -1,9 +1,11 @@
+import pytest
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from apps.users.models import User
 
 
+@pytest.mark.django_db
 class UserAPITest(APITestCase):
     def setUp(self) -> None:
         self.data = {
@@ -20,22 +22,20 @@ class UserAPITest(APITestCase):
     @staticmethod
     def setup_user():
         return User.objects.create_user(
-            username="bruce_wayne",
-            email="batman@batcave.com",
-            password="Martha",
+            username="bruce_wayne", email="batman@batcave.com", password="Martha",
         )
 
     def test_create_user(self):
         response = self.client.post(
             "/rest-auth/registration/", self.data, format="json"
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertGreater(User.objects.count(), 0)
+        assert response.status_code == status.HTTP_201_CREATED
+        assert User.objects.count() > 0
 
     def test_retrieve_user(self):
         self.client.force_authenticate(user=self.owner)
         response = self.client.get("/rest-auth/user/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
 
     def test_update_user(self):
         self.client.force_authenticate(user=self.owner)
@@ -50,4 +50,4 @@ class UserAPITest(APITestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK

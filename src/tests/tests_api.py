@@ -1,12 +1,13 @@
+import pytest
 from rest_framework.test import APITestCase, APIClient
 
 from apps.comments.models import Comment, CommentUserReaction
 from apps.posts.models import Post, PostUserReaction
-
 from apps.users.models import User
 
 
-class PostListCreateTests(APITestCase):
+@pytest.mark.django_db
+class TestPostListCreate(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.uri = "/api/posts/"
@@ -23,11 +24,8 @@ class PostListCreateTests(APITestCase):
     def test_list_post(self):
         response = self.client.get(self.uri)
 
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"Expected Response Code 200, received {response.status_code} instead.",
-        )
+        assert response.status_code == 200
+        assert f"Expected Response Code 200, received {response.status_code} instead."
 
     def test_create_post(self):
         response = self.client.post(
@@ -40,14 +38,11 @@ class PostListCreateTests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(
-            response.status_code,
-            201,
-            f"Expected Response Code 201, received {response.status_code} instead.",
-        )
+        assert response.status_code == 201
 
 
-class PostDetailTests(APITestCase):
+@pytest.mark.django_db
+class TestPostDetail(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.uri = "/api/posts/"
@@ -72,11 +67,8 @@ class PostDetailTests(APITestCase):
     def test_retrieve_post(self):
         response = self.client.get(f"{self.uri}{self.test_post.pk}/")
 
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"Expected Response Code 200, received {response.status_code} instead.",
-        )
+        assert response.status_code == 200
+        assert f"Expected Response Code 200, received {response.status_code} instead."
 
     def test_update_post(self):
         response = self.client.put(
@@ -89,20 +81,13 @@ class PostDetailTests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"Expected Response Code 200, received {response.status_code} instead.",
-        )
+        assert response.status_code == 200
 
     def test_destroy_post(self):
         response = self.client.delete(f"{self.uri}{self.test_post.pk}/")
 
-        self.assertEqual(
-            response.status_code,
-            204,
-            f"Expected Response Code 204, received {response.status_code} instead.",
-        )
+        assert response.status_code == 204
+        assert f"Expected Response Code 204, received {response.status_code} instead."
 
     def test_update_post_like_unlike(self):
         response = self.client.post(
@@ -111,14 +96,11 @@ class PostDetailTests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"Expected Response Code 200, received {response.status_code} instead.",
-        )
+        assert response.status_code == 200
 
 
-class CommentListCreateTests(APITestCase):
+@pytest.mark.django_db
+class TestCommentListCreate(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.uri = "/api/comments/"
@@ -138,11 +120,7 @@ class CommentListCreateTests(APITestCase):
     def test_list_comment(self):
         response = self.client.get(self.uri)
 
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"Expected Response Code 200, received {response.status_code} instead.",
-        )
+        assert response.status_code == 200
 
     def test_create_comment(self):
         response = self.client.post(
@@ -155,14 +133,11 @@ class CommentListCreateTests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(
-            response.status_code,
-            201,
-            f"Expected Response Code 201, received {response.status_code} instead.",
-        )
+        assert response.status_code == 201
 
 
-class CommentDetailTests(APITestCase):
+@pytest.mark.django_db
+class TestCommentDetail(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.uri = "/api/comments/"
@@ -188,11 +163,7 @@ class CommentDetailTests(APITestCase):
     def test_retrieve_comment(self):
         response = self.client.get(f"{self.uri}{self.test_comment.pk}/")
 
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"Expected Response Code 200, received {response.status_code} instead.",
-        )
+        assert response.status_code == 200
 
     def test_update_comment(self):
         response = self.client.put(
@@ -205,20 +176,12 @@ class CommentDetailTests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"Expected Response Code 200, received {response.status_code} instead.",
-        )
+        assert response.status_code == 200
 
     def test_destroy_comment(self):
         response = self.client.delete(f"{self.uri}{self.test_comment.pk}/")
 
-        self.assertEqual(
-            response.status_code,
-            204,
-            f"Expected Response Code 204, received {response.status_code} instead.",
-        )
+        assert response.status_code == 204
 
     def test_update_comment_like_unlike(self):
         response = self.client.post(
@@ -227,8 +190,4 @@ class CommentDetailTests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"Expected Response Code 200, received {response.status_code} instead.",
-        )
+        assert response.status_code == 200

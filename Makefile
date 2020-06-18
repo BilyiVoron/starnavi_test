@@ -29,3 +29,9 @@ test_user:
 
 test:
 	@docker exec -it -w /starnavi_test starnavi_test_api python src/manage.py test
+
+pytest:
+	@docker exec -it -w /starnavi_test/src starnavi_test_api pytest
+
+pytestV:
+	@docker exec -it -w /starnavi_test/src starnavi_test_api pytest -v
