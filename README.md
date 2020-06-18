@@ -38,6 +38,7 @@ Just run `make test_env`
 
 - Apply db migrations `make migrations`
 - Create superuser `make test_user`. After that you will be able to login into Admin
+- Run tests `make pytest`
 - Be happy
 
 #### Create new app
