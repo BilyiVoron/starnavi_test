@@ -13,8 +13,14 @@ class PostViewSet(LikedMixin, viewsets.ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, )
 
+    # def get_queryset(self): # TODO
+    #     return Post.objects.get(self.kwargs["pk"])
+
 
 class CommentViewSet(LikedMixin, viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, )
+
+    def get_queryset(self): # TODO
+        pass

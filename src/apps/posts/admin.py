@@ -12,8 +12,3 @@ class PostAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Change to False when deploy"""
         return True
-#
-#
-# @admin.register(PostUserReaction)
-# class PostUserReactionAdmin(admin.ModelAdmin):
-#     pass
