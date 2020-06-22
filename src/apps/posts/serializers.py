@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from apps.posts.models import Post, PostUserReaction
+from apps.posts.models import Post
+from apps.reactions.services import is_fan
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
@@ -10,12 +11,22 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
+    is_fan = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
-        fields = ("id", "owner", "title", "content", "like", "unlike", "created_at")
+        fields = ("id", "owner", "title", "content", "total_likes", "total_unlikes", "created_at")
+
+    def get_is_fan(self, obj) -> bool:
+        """
+        Checks if "request.user" has liked or unliked ("obj").
+        """
+        owner = self.context.get("request").user
+        return is_fan(obj, owner)
 
 
-class PostUserReactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostUserReaction
-        fields = ("id", "owner", "post", "like", "unlike")
+
+# class PostUserReactionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PostUserReaction
+#         fields = ("id", "owner", "post", "like", "unlike")

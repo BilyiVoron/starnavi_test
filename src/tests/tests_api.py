@@ -1,8 +1,9 @@
 import pytest
 from rest_framework.test import APITestCase, APIClient
 
-from apps.comments.models import Comment, CommentUserReaction
-from apps.posts.models import Post, PostUserReaction
+from apps.comments.models import Comment
+from apps.posts.models import Post
+from apps.reactions.models import Like
 from apps.users.models import User
 
 
@@ -71,7 +72,7 @@ class TestPostDetail(APITestCase):
             content="Some post's description",
             owner=self.owner,
         )
-        self.test_like_or_unlike = PostUserReaction.objects.create(
+        self.test_like_or_unlike = Like.objects.create(
             owner=self.owner, post=self.test_post, like=False, unlike=False
         )
 

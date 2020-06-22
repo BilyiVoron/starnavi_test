@@ -76,7 +76,6 @@ ROOT_URLCONF = "config.urls"
 # https://docs.djangoproject.com/en/3.0/ref/settings/#wsgi-application
 WSGI_APPLICATION = "config.wsgi.application"
 
-
 # APPS
 # ------------------------------------------------------------------------------
 INSTALLED_APPS = [
@@ -103,9 +102,10 @@ INSTALLED_APPS = [
     "django_filters",
     "crispy_forms",
     # local apps
-    "apps.posts",
-    "apps.comments",
     "apps.api",
+    "apps.comments",
+    "apps.posts",
+    "apps.reactions",
     "apps.users",
 ]
 

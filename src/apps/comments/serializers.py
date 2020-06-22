@@ -1,12 +1,7 @@
 from rest_framework import serializers
 
-from apps.comments.models import Comment, CommentUserReaction
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ("id", "owner", "post", "comment_body", "like", "unlike", "created_at")
+from apps.comments.models import Comment
+from apps.reactions.services import is_fan
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
@@ -15,7 +10,23 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         fields = ("post", "comment_body")
 
 
-class CommentUserReactionSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
+    is_fan = serializers.SerializerMethodField()
+
     class Meta:
-        model = CommentUserReaction
-        fields = ("id", "owner", "comment", "like", "unlike")
+        model = Comment
+        fields = ("id", "owner", "post", "comment_body", "total_likes", "total_unlikes", "created_at")
+
+    def get_is_fan(self, obj) -> bool:
+        """
+        Checks if "request.user" has liked or unliked ("obj").
+        """
+        owner = self.context.get("request").user
+        return is_fan(obj, owner)
+
+
+
+# class CommentUserReactionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CommentUserReaction
+#         fields = ("id", "owner", "comment", "like", "unlike")

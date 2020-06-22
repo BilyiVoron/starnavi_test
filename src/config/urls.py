@@ -17,7 +17,7 @@ schema_view = get_schema_view(
         The `ReDoc` view can be found [here](/api/redocs/).""",
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=(permissions.AllowAny, ),
 )
 
 
