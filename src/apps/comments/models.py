@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import Index
 from django.utils.translation import gettext as _
 
-from apps.reactions.models import Unlike, Like
+from apps.reactions.models import Like
 from common.models import BaseDateAuditModel
 
 
@@ -12,8 +12,6 @@ class Comment(BaseDateAuditModel):
     post = models.ForeignKey("posts.Post", on_delete=models.CASCADE, )
     comment_body = models.TextField()
     likes = GenericRelation(Like)
-    unlikes = GenericRelation(Unlike)
-    # reactions = models.ManyToManyField("reactions.UserReaction", related_name="comment_reactions", blank=False, )
 
     class Meta:
         verbose_name = _("Comment")
@@ -28,31 +26,11 @@ class Comment(BaseDateAuditModel):
 
     @property
     def total_likes(self):
-        return  self.likes.count()
+        return self.like.filter(like=True).count()
 
     @property
     def total_unlikes(self):
-        return  self.unlikes.count()
+        return self.like.filter(like=False).count()
 
     def __str__(self):
         return self.comment_body
-
-# class CommentUserReaction(models.Model):
-#     owner = models.ForeignKey("users.User", on_delete=models.CASCADE)
-#     comment = models.ForeignKey("Comment", on_delete=models.CASCADE)
-#     like = models.BooleanField(default=False)
-#     unlike = models.BooleanField(default=False)
-#
-#     class Meta:
-#         verbose_name = "CommentUserReaction"
-#         verbose_name_plural = "CommentUserReactions"
-#
-#         indexes = [
-#             Index(fields=["owner", "comment"]),
-#             Index(fields=["owner", "comment", "like"]),
-#             Index(fields=["owner", "comment", "unlike"]),
-#             Index(fields=["owner", "comment", "like", "unlike"]),
-#         ]
-#
-#     def __str__(self):
-#         return f"{self.id}"

@@ -15,7 +15,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ("id", "owner", "post", "comment_body", "total_likes", "total_unlikes", "created_at")
+        fields = ("id", "owner", "post", "comment_body", "total_likes", "total_unlikes", "created_at", "is_fan")
 
     def get_is_fan(self, obj) -> bool:
         """
@@ -23,10 +23,3 @@ class CommentSerializer(serializers.ModelSerializer):
         """
         owner = self.context.get("request").user
         return is_fan(obj, owner)
-
-
-
-# class CommentUserReactionSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = CommentUserReaction
-#         fields = ("id", "owner", "comment", "like", "unlike")

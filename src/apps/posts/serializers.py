@@ -13,9 +13,10 @@ class PostCreateSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     is_fan = serializers.SerializerMethodField()
 
+
     class Meta:
         model = Post
-        fields = ("id", "owner", "title", "content", "total_likes", "total_unlikes", "created_at")
+        fields = ("id", "owner", "title", "content", "total_likes", "total_unlikes", "created_at", "is_fan")
 
     def get_is_fan(self, obj) -> bool:
         """
@@ -23,10 +24,3 @@ class PostSerializer(serializers.ModelSerializer):
         """
         owner = self.context.get("request").user
         return is_fan(obj, owner)
-
-
-
-# class PostUserReactionSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = PostUserReaction
-#         fields = ("id", "owner", "post", "like", "unlike")
