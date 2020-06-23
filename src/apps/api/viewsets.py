@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from apps.api.mixins import LikedMixin
@@ -11,16 +12,24 @@ from apps.posts.serializers import PostSerializer
 class PostViewSet(LikedMixin, viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)  # TODO Delete or comment in production
 
-    # def get_queryset(self): # TODO
-    #     return Post.objects.get(self.kwargs["pk"])
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        queryset = Post.objects.filter(id=self.kwargs.get("pk", None))
+        return get_object_or_404(queryset)
 
 
 class CommentViewSet(LikedMixin, viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)  # TODO Delete or comment in production
 
-    def get_queryset(self): # TODO
-        pass
+    def perform_create(self, serializer):
+        serializer.save(post_id=self.kwargs.get("p_pk", None))
+
+    def get_queryset(self):
+        queryset = Comment.objects.filter(post=self.kwargs.get("p_pk", None))
+        return get_object_or_404(queryset)

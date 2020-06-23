@@ -2,8 +2,8 @@ import pytest
 from model_bakery import baker
 from django.test import TestCase
 
-from apps.comments.models import Comment, CommentUserReaction
-from apps.posts.models import Post, PostUserReaction
+from apps.comments.models import Comment
+from apps.posts.models import Post
 from apps.users.models import User
 
 
@@ -39,51 +39,51 @@ class TestCommentModel(TestCase):
         assert Comment.objects.filter(comment_body="Awful!").count() == 0
 
 
-@pytest.mark.django_db
-class TestCommentReactionModel(TestCase):
-    """
-        Test module for CommentUserReaction model
-    """
-
-    def setUp(self):
-        self.test_user = baker.make(User)
-
-        self.test_post = baker.make(
-            Post, title="Attention!", content="Awesome!", owner=self.test_user
-        )
-
-        self.test_comment = baker.make(
-            Comment, comment_body="Awful!", post=self.test_post, owner=self.test_user
-        )
-
-        baker.make(
-            CommentUserReaction,
-            like=True,
-            unlike=False,
-            comment=self.test_comment,
-            owner=self.test_user,
-        )
-
-    def test_add_reaction(self):
-        test_like = baker.make(
-            CommentUserReaction,
-            like=True,
-            unlike=False,
-            comment=self.test_comment,
-            owner=self.test_user,
-        )
-
-        assert test_like.like == True and test_like.unlike == False
-
-        test_unlike = baker.make(
-            CommentUserReaction,
-            like=False,
-            unlike=True,
-            comment=self.test_comment,
-            owner=self.test_user,
-        )
-
-        assert test_unlike.unlike == True and test_unlike.like == False
+# @pytest.mark.django_db
+# class TestCommentReactionModel(TestCase):
+#     """
+#         Test module for CommentUserReaction model
+#     """
+#
+#     def setUp(self):
+#         self.test_user = baker.make(User)
+#
+#         self.test_post = baker.make(
+#             Post, title="Attention!", content="Awesome!", owner=self.test_user
+#         )
+#
+#         self.test_comment = baker.make(
+#             Comment, comment_body="Awful!", post=self.test_post, owner=self.test_user
+#         )
+#
+#         baker.make(
+#             CommentUserReaction,
+#             like=True,
+#             unlike=False,
+#             comment=self.test_comment,
+#             owner=self.test_user,
+#         )
+#
+#     def test_add_reaction(self):
+#         test_like = baker.make(
+#             CommentUserReaction,
+#             like=True,
+#             unlike=False,
+#             comment=self.test_comment,
+#             owner=self.test_user,
+#         )
+#
+#         assert test_like.like == True and test_like.unlike == False
+#
+#         test_unlike = baker.make(
+#             CommentUserReaction,
+#             like=False,
+#             unlike=True,
+#             comment=self.test_comment,
+#             owner=self.test_user,
+#         )
+#
+#         assert test_unlike.unlike == True and test_unlike.like == False
 
 
 @pytest.mark.django_db
@@ -114,44 +114,44 @@ class TestPostModel(TestCase):
         assert Post.objects.filter(title="Attention!").count() == 0
 
 
-@pytest.mark.django_db
-class TestPostReactionModel(TestCase):
-    """
-        Test module for PostUserReaction model
-    """
-
-    def setUp(self):
-        self.test_user = baker.make(User)
-
-        self.test_post = baker.make(
-            Post, title="Attention!", content="Awesome!", owner=self.test_user
-        )
-
-        baker.make(
-            PostUserReaction,
-            like=True,
-            unlike=False,
-            post=self.test_post,
-            owner=self.test_user,
-        )
-
-    def test_add_reaction(self):
-        test_like = baker.make(
-            PostUserReaction,
-            like=True,
-            unlike=False,
-            post=self.test_post,
-            owner=self.test_user,
-        )
-
-        assert test_like.like == True and test_like.unlike == False
-
-        test_unlike = baker.make(
-            PostUserReaction,
-            like=False,
-            unlike=True,
-            post=self.test_post,
-            owner=self.test_user,
-        )
-
-        assert test_unlike.unlike == True and test_unlike.like == False
+# @pytest.mark.django_db
+# class TestPostReactionModel(TestCase):
+#     """
+#         Test module for PostUserReaction model
+#     """
+#
+#     def setUp(self):
+#         self.test_user = baker.make(User)
+#
+#         self.test_post = baker.make(
+#             Post, title="Attention!", content="Awesome!", owner=self.test_user
+#         )
+#
+#         baker.make(
+#             PostUserReaction,
+#             like=True,
+#             unlike=False,
+#             post=self.test_post,
+#             owner=self.test_user,
+#         )
+#
+#     def test_add_reaction(self):
+#         test_like = baker.make(
+#             PostUserReaction,
+#             like=True,
+#             unlike=False,
+#             post=self.test_post,
+#             owner=self.test_user,
+#         )
+#
+#         assert test_like.like == True and test_like.unlike == False
+#
+#         test_unlike = baker.make(
+#             PostUserReaction,
+#             like=False,
+#             unlike=True,
+#             post=self.test_post,
+#             owner=self.test_user,
+#         )
+#
+#         assert test_unlike.unlike == True and test_unlike.like == False

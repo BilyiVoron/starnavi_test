@@ -136,7 +136,6 @@ class TestPostDetail(APITestCase):
 
         assert response.status_code == 401
 
-
     def test_destroy_post(self):
         self.client.force_authenticate(user=self.owner)
         response = self.client.delete(f"{self.uri}{self.test_post.pk}/")

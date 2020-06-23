@@ -6,7 +6,9 @@ from django.utils.translation import gettext as _
 
 
 class Like(models.Model):
-    owner = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="likes")
+    owner = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, related_name="likes"
+    )
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")

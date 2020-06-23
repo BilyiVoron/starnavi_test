@@ -8,7 +8,10 @@ class FanSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("username", "full_name", )
+        fields = (
+            "username",
+            "full_name",
+        )
 
     def get_full_name(self, obj):
         return obj.get_full_name()

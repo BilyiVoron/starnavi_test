@@ -15,7 +15,16 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ("id", "owner", "post", "comment_body", "total_likes", "total_unlikes", "created_at", "is_fan")
+        fields = (
+            "id",
+            "owner",
+            "post",
+            "comment_body",
+            "total_likes",
+            "total_unlikes",
+            "created_at",
+            "is_fan",
+        )
 
     def get_is_fan(self, obj) -> bool:
         """

@@ -20,15 +20,34 @@ urlpatterns = [
         name="create_list",
     ),
     path("posts/<int:pk>/", PostDetailApiView.as_view(), name="post_detail"),
-    path("posts/<int:pk>/reactions/", PostViewSet.as_view({"get": "list"}), name="post_reactions"),
     path(
-        "comments/", CommentListApiView.as_view({"get": "list"}), name="comments_list"
+        "posts/<int:pk>/reactions/",
+        PostViewSet.as_view({"get": "list"}),
+        name="post_reactions",
     ),
     path(
-        "comment_create/",
+        "posts/<int:pk>/reactions/like/",
+        PostViewSet.as_view({"post": "create"}),
+        name="like",
+    ),
+    path(
+        "posts/<int:pk>/comments/",
+        CommentListApiView.as_view({"get": "list"}),
+        name="comments_list",
+    ),
+    path(
+        "posts/<int:pk>/comment_create/",
         CommentCreateApiView.as_view({"post": "create"}),
         name="comment_create",
     ),
-    path("comments/<int:pk>/", CommentDetailApiView.as_view(), name="comment_detail"),
-    path("comments/<int:pk>/reactions/", CommentViewSet.as_view({"get": "list"}), name="comment_reactions"),
+    path(
+        "posts/<int:p_pk>/comments/<int:pk>/",
+        CommentDetailApiView.as_view(),
+        name="comment_detail",
+    ),
+    path(
+        "posts/<int:p_pk>/comments/<int:pk>/reactions/",
+        CommentViewSet.as_view({"get": "list"}),
+        name="comment_reactions",
+    ),
 ]

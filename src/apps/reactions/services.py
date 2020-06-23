@@ -9,7 +9,9 @@ def add_like(obj, owner):
     Likes "obj".
     """
     obj_type = ContentType.objects.get_for_model(obj)
-    like, is_created = Like.objects.get_or_create(content_type=obj_type, object_id=obj.id, owner=owner)
+    like, is_created = Like.objects.get_or_create(
+        content_type=obj_type, object_id=obj.id, owner=owner
+    )
     return like
 
 

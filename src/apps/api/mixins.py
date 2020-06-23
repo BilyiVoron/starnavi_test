@@ -6,7 +6,7 @@ from apps.users.serializers import FanSerializer
 
 
 class LikedMixin:
-    @action(methods=["POST"],detail=True)
+    @action(methods=["POST"], detail=True)
     def like(self, request):
         """
         Likes "obj".
@@ -15,7 +15,7 @@ class LikedMixin:
         services.add_like(obj, request.owner)
         return Response()
 
-    @action(methods=["POST"],detail=True)
+    @action(methods=["POST"], detail=True)
     def unlike(self, request):
         """
         Remove like from "obj".
