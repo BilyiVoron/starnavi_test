@@ -8,10 +8,10 @@ from common.models import BaseDateAuditModel
 
 
 class Comment(BaseDateAuditModel):
-    owner = models.ForeignKey("users.User", on_delete=models.CASCADE,)
-    post = models.ForeignKey("posts.Post", on_delete=models.CASCADE,)
+    owner = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    post = models.ForeignKey("posts.Post", on_delete=models.CASCADE)
     comment_body = models.TextField()
-    likes = GenericRelation(Like)
+    like = GenericRelation(Like)
 
     class Meta:
         verbose_name = _("Comment")

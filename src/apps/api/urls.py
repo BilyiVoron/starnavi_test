@@ -1,5 +1,6 @@
 from django.urls import path
 
+from apps.api.mixins import LikedMixin
 from apps.api.views import (
     PostListApiView,
     PostCreateApiView,
@@ -26,8 +27,8 @@ urlpatterns = [
         name="post_reactions",
     ),
     path(
-        "posts/<int:pk>/reactions/like/",
-        PostViewSet.as_view({"post": "create"}),
+        "posts/<int:pk>/like/",
+        PostViewSet.as_view({"post": "like"}),
         name="like",
     ),
     path(

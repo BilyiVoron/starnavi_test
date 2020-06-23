@@ -5,19 +5,15 @@ from rest_framework.generics import (
     CreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.renderers import TemplateHTMLRenderer
 
 from rest_framework.viewsets import GenericViewSet
 
+from apps.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, CommentCreateSerializer
 from apps.comments.models import Comment
-from apps.comments.serializers import (
-    CommentSerializer,
-    CommentCreateSerializer,
-)
 from apps.posts.models import Post
-from apps.posts.serializers import (
-    PostSerializer,
-    PostCreateSerializer,
-)
+
 
 
 class PostListApiView(GenericViewSet, ListAPIView):
@@ -29,7 +25,7 @@ class PostListApiView(GenericViewSet, ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = ["title", "pub_date", "like"]
+    ordering_fields = ["title", "pub_date"]
 
 
 class PostCreateApiView(GenericViewSet, CreateAPIView):
@@ -53,6 +49,7 @@ class PostDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    # permission_classes = (IsAuthenticatedOrReadOnly,)  # TODO Delete or comment in production
 
     def get_queryset(self):
         return Post.objects.filter(owner=self.request.user)

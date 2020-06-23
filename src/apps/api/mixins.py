@@ -1,8 +1,8 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.reactions import services
-from apps.users.serializers import FanSerializer
+from apps.api import services
+from apps.api.serializers import FanSerializer
 
 
 class LikedMixin:
@@ -12,7 +12,7 @@ class LikedMixin:
         Likes "obj".
         """
         obj = self.get_object()
-        services.add_like(obj, request.owner)
+        services.add_like(obj, request.user)
         return Response()
 
     @action(methods=["POST"], detail=True)
@@ -21,7 +21,7 @@ class LikedMixin:
         Remove like from "obj".
         """
         obj = self.get_object()
-        services.remove_like(obj, request.owner)
+        services.remove_like(obj, request.user)
         return Response()
 
     @action(detail=False)
