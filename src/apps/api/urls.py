@@ -22,11 +22,6 @@ urlpatterns = [
     ),
     path("posts/<int:pk>/", PostDetailApiView.as_view(), name="post_detail"),
     path(
-        "posts/<int:pk>/reactions/",
-        PostViewSet.as_view({"get": "list"}),
-        name="post_reactions",
-    ),
-    path(
         "posts/<int:pk>/like/",
         PostViewSet.as_view({"post": "like"}),
         name="like",

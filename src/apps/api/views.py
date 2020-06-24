@@ -6,14 +6,17 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.renderers import TemplateHTMLRenderer
 
 from rest_framework.viewsets import GenericViewSet
 
-from apps.api.serializers import PostSerializer, PostCreateSerializer, CommentSerializer, CommentCreateSerializer
+from apps.api.serializers import (
+    PostSerializer,
+    PostCreateSerializer,
+    CommentSerializer,
+    CommentCreateSerializer,
+)
 from apps.comments.models import Comment
 from apps.posts.models import Post
-
 
 
 class PostListApiView(GenericViewSet, ListAPIView):
@@ -26,6 +29,9 @@ class PostListApiView(GenericViewSet, ListAPIView):
     serializer_class = PostSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["title", "pub_date"]
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+    )  # TODO Delete or comment in production
 
 
 class PostCreateApiView(GenericViewSet, CreateAPIView):
@@ -36,6 +42,9 @@ class PostCreateApiView(GenericViewSet, CreateAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+    )  # TODO Delete or comment in production
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -49,7 +58,9 @@ class PostDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    # permission_classes = (IsAuthenticatedOrReadOnly,)  # TODO Delete or comment in production
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+    )  # TODO Delete or comment in production
 
     def get_queryset(self):
         return Post.objects.filter(owner=self.request.user)
@@ -71,6 +82,12 @@ class CommentListApiView(GenericViewSet, ListAPIView):
     filter_backends = [filters.OrderingFilter, rfilters.DjangoFilterBackend]
     filterset_fields = ("post",)
     ordering_fields = ["post"]
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+    )  # TODO Delete or comment in production
+
+    def get_queryset(self):
+        return Comment.objects.filter(post_id=self.kwargs.get("pk", None))
 
 
 class CommentCreateApiView(GenericViewSet, CreateAPIView):
@@ -81,9 +98,15 @@ class CommentCreateApiView(GenericViewSet, CreateAPIView):
 
     queryset = Comment.objects.all()
     serializer_class = CommentCreateSerializer
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+    )  # TODO Delete or comment in production
+
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user, post_id=self.kwargs.get("pk", None))
 
 
 class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
@@ -94,6 +117,9 @@ class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+    )  # TODO Delete or comment in production
 
     def get_queryset(self):
         return Comment.objects.filter(owner=self.request.user)
