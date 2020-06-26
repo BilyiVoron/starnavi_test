@@ -13,13 +13,21 @@ from apps.api.views import (
 app_name = "api"
 
 urlpatterns = [
-    path("posts/", PostListApiView.as_view({"get": "list"}), name="posts_list"),
+    path(
+        "posts/",
+        PostListApiView.as_view({"get": "list"}),
+        name="posts_list"
+    ),
     path(
         "post_create/",
         PostCreateApiView.as_view({"post": "create"}),
         name="create_list",
     ),
-    path("posts/<int:pk>/", PostDetailApiView.as_view(), name="post_detail"),
+    path(
+        "posts/<int:pk>/",
+        PostDetailApiView.as_view(),
+        name="post_detail"
+    ),
     path(
         "posts/<int:pk>/like/",
         LikeUnlikeApiView.as_view({"post": "like"}),
@@ -31,7 +39,9 @@ urlpatterns = [
         name="post_unlike",
     ),
     path(
-        "posts/<int:pk>/fans/", LikeUnlikeApiView.as_view({"get": "fans"}), name="post_fans",
+        "posts/<int:pk>/fans/",
+        LikeUnlikeApiView.as_view({"get": "fans"}),
+        name="post_fans",
     ),
     path(
         "posts/<int:pk>/comments/",
@@ -44,22 +54,22 @@ urlpatterns = [
         name="comment_create",
     ),
     path(
-        "posts/<int:pk>/comments/<int:c_pk>/",
+        "posts/<int:p_pk>/comments/<int:pk>/",
         CommentDetailApiView.as_view(),
         name="comment_detail",
     ),
     path(
-        "posts/<int:pk>/comments/<int:c_pk>/like/",
+        "posts/<int:p_pk>/comments/<int:pk>/like/",
         LikeUnlikeApiView.as_view({"post": "like"}),
         name="comment_like",
     ),
     path(
-        "posts/<int:pk>/comments/<int:c_pk>/unlike/",
+        "posts/<int:p_pk>/comments/<int:pk>/unlike/",
         LikeUnlikeApiView.as_view({"post": "unlike"}),
         name="comment_unlike",
     ),
     path(
-        "posts/<int:pk>/comments/<int:c_pk>/fans/",
+        "posts/<int:p_pk>/comments/<int:pk>/fans/",
         LikeUnlikeApiView.as_view({"get": "fans"}),
         name="comment_fans",
     ),

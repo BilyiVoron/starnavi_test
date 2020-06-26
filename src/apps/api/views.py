@@ -124,6 +124,8 @@ class LikeUnlikeApiView(
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
+        print(self.kwargs.get("c_pk"))
+        print(self.kwargs.get("pk"))
         if self.kwargs.get("c_pk"):
             return Comment.objects.filter(id=self.kwargs.get("c_pk", None))
         else:
