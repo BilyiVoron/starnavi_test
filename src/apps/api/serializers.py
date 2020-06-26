@@ -25,7 +25,6 @@ class PostSerializer(serializers.ModelSerializer):
             "title",
             "content",
             "total_likes",
-            "total_unlikes",
             "created_at",
             "is_fan",
         )
@@ -56,7 +55,6 @@ class CommentSerializer(serializers.ModelSerializer):
             "post",
             "comment_body",
             "total_likes",
-            "total_unlikes",
             "created_at",
             "is_fan",
         )
