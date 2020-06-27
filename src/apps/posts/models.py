@@ -25,11 +25,7 @@ class Post(BaseDateAuditModel):
 
     @property
     def total_likes(self):
-        return self.like.filter(like=True).count()
-
-    @property
-    def total_unlikes(self):
-        return self.like.filter(like=False).count()
+        return self.like.filter(like=None).count()
 
     def __str__(self):
         return f"{self.title}"

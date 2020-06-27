@@ -1,22 +1,27 @@
 from django_filters import rest_framework as rfilters
 from rest_framework import filters
+from rest_framework.decorators import action
 from rest_framework.generics import (
     ListAPIView,
     CreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
+from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin, UpdateModelMixin
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from apps.api import services
 from apps.api.serializers import (
     PostSerializer,
     PostCreateSerializer,
     CommentSerializer,
     CommentCreateSerializer,
+    FanSerializer,
+    LikeSerializer,
 )
 from apps.comments.models import Comment
 from apps.posts.models import Post
+from apps.reactions.models import Like
 
 
 class PostListApiView(GenericViewSet, ListAPIView):
@@ -29,9 +34,6 @@ class PostListApiView(GenericViewSet, ListAPIView):
     serializer_class = PostSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["title", "pub_date"]
-    permission_classes = (
-        IsAuthenticatedOrReadOnly,
-    )  # TODO Delete or comment in production
 
 
 class PostCreateApiView(GenericViewSet, CreateAPIView):
@@ -42,9 +44,6 @@ class PostCreateApiView(GenericViewSet, CreateAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
-    permission_classes = (
-        IsAuthenticatedOrReadOnly,
-    )  # TODO Delete or comment in production
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -58,9 +57,8 @@ class PostDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (
-        IsAuthenticatedOrReadOnly,
-    )  # TODO Delete or comment in production
+    lookup_field = "pk"
+    lookup_url_kwarg = "post_pk"
 
     def get_queryset(self):
         return Post.objects.filter(owner=self.request.user)
@@ -68,6 +66,7 @@ class PostDetailApiView(RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         request.data["owner"] = self.request.user.id
         response = super().update(request, *args, **kwargs)
+
         return response
 
 
@@ -82,12 +81,9 @@ class CommentListApiView(GenericViewSet, ListAPIView):
     filter_backends = [filters.OrderingFilter, rfilters.DjangoFilterBackend]
     filterset_fields = ("post",)
     ordering_fields = ["post"]
-    permission_classes = (
-        IsAuthenticatedOrReadOnly,
-    )  # TODO Delete or comment in production
 
     def get_queryset(self):
-        return Comment.objects.filter(post_id=self.kwargs.get("pk", None))
+        return Comment.objects.filter(post_id=self.kwargs.get("post_pk", None))
 
 
 class CommentCreateApiView(GenericViewSet, CreateAPIView):
@@ -98,15 +94,9 @@ class CommentCreateApiView(GenericViewSet, CreateAPIView):
 
     queryset = Comment.objects.all()
     serializer_class = CommentCreateSerializer
-    permission_classes = (
-        IsAuthenticatedOrReadOnly,
-    )  # TODO Delete or comment in production
-
-    # def perform_create(self, serializer):
-    #     serializer.save(owner=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user, post_id=self.kwargs.get("pk", None))
+        serializer.save(owner=self.request.user, post_id=self.kwargs.get("post_pk", None))
 
 
 class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
@@ -117,9 +107,8 @@ class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (
-        IsAuthenticatedOrReadOnly,
-    )  # TODO Delete or comment in production
+    lookup_field = "pk"
+    lookup_url_kwarg = "comment_pk"
 
     def get_queryset(self):
         return Comment.objects.filter(owner=self.request.user)
@@ -127,4 +116,96 @@ class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         request.data["owner"] = self.request.user.id
         response = super().update(request, *args, **kwargs)
+
         return response
+
+
+class PostLikeUnlikeApiView(
+    GenericViewSet, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
+):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    lookup_field = "pk"
+    lookup_url_kwarg = "post_pk"
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def get_queryset(self):
+        return Post.objects.filter(id=self.kwargs.get("post_pk", None))
+
+    @action(methods=["POST"], detail=True)
+    def like(self, request, **kwargs):
+        """
+        Likes "obj".
+        """
+        obj = self.get_object()
+        services.add_like(obj, request.user)
+
+        return Response(f'You have just liked "{obj}"')
+
+    @action(methods=["POST"], detail=True)
+    def unlike(self, request, **kwargs):
+        """
+        Remove like from "obj".
+        """
+        obj = self.get_object()
+        services.remove_like(obj, request.user)
+
+        return Response(f'You have just removed your like from "{obj}"')
+
+    @action(detail=False)
+    def fans(self, request, **kwargs):
+        """
+        Get all users which have liked "obj".
+        """
+        obj = self.get_object()
+        fans = services.get_fans(obj)
+        serializer = FanSerializer(fans, many=True)
+
+        return Response(serializer.data)
+
+
+class CommentLikeUnlikeApiView(
+    GenericViewSet, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
+):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    lookup_field = "pk"
+    lookup_url_kwarg = "comment_pk"
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def get_queryset(self):
+        return Comment.objects.filter(id=self.kwargs.get("comment_pk", None))
+
+    @action(methods=["POST"], detail=True)
+    def like(self, request, **kwargs):
+        """
+        Likes "obj".
+        """
+        obj = self.get_object()
+        services.add_like(obj, request.user)
+
+        return Response(f'You have just liked "{obj}"')
+
+    @action(methods=["POST"], detail=True)
+    def unlike(self, request, **kwargs):
+        """
+        Remove like from "obj".
+        """
+        obj = self.get_object()
+        services.remove_like(obj, request.user)
+        return Response(f'You have just removed your like from "{obj}"')
+
+    @action(detail=False)
+    def fans(self, request, **kwargs):
+        """
+        Get all users which have liked "obj".
+        """
+        obj = self.get_object()
+        fans = services.get_fans(obj)
+        serializer = FanSerializer(fans, many=True)
+
+        return Response(serializer.data)
