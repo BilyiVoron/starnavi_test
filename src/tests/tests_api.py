@@ -3,7 +3,8 @@ from rest_framework.test import APITestCase, APIClient
 
 from apps.comments.models import Comment
 from apps.posts.models import Post
-from apps.reactions.models import Like
+
+# from apps.reactions.models import Like
 from apps.users.models import User
 
 
@@ -65,16 +66,16 @@ class TestPostDetail(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.uri = "/api/posts/"
-        self.uri1 = "/api/post_like_unlike/"
+        # self.uri1 = "/api/post_like_unlike/"
         self.owner = self.setup_user()
         self.test_post = Post.objects.create(
             title="Some post's title",
             content="Some post's description",
             owner=self.owner,
         )
-        self.test_like_or_unlike = Like.objects.create(
-            owner=self.owner, post=self.test_post, like=False, unlike=False
-        )
+        # self.test_like_or_unlike = Like.objects.create(
+        #     owner=self.owner, post=self.test_post, like=False, unlike=False
+        # )
 
     @staticmethod
     def setup_user():
@@ -151,32 +152,33 @@ class TestPostDetail(APITestCase):
 
         assert response.status_code == 401
 
-    def test_update_post_like_unlike(self):
-        self.client.force_authenticate(user=self.owner)
-        response = self.client.post(
-            f"{self.uri1}{self.test_post.pk}/",
-            {"like": True, "unlike": False},
-            format="json",
-        )
-
-        assert response.status_code == 200
-
-    def test_update_post_like_unlike_unauthorized(self):
-        response = self.client.post(
-            f"{self.uri1}{self.test_post.pk}/",
-            {"like": True, "unlike": False},
-            format="json",
-        )
-
-        assert response.status_code == 401
+    # def test_update_post_like_unlike(self):
+    #     self.client.force_authenticate(user=self.owner)
+    #     response = self.client.post(
+    #         f"{self.uri1}{self.test_post.pk}/",
+    #         {"like": True, "unlike": False},
+    #         format="json",
+    #     )
+    #
+    #     assert response.status_code == 200
+    #
+    # def test_update_post_like_unlike_unauthorized(self):
+    #     response = self.client.post(
+    #         f"{self.uri1}{self.test_post.pk}/",
+    #         {"like": True, "unlike": False},
+    #         format="json",
+    #     )
+    #
+    #     assert response.status_code == 401
 
 
 @pytest.mark.django_db
 class TestCommentListCreate(APITestCase):
     def setUp(self):
         self.client = APIClient()
-        self.uri = "/api/comments/"
-        self.uri1 = "/api/comment_create/"
+        self.uri = "/api/posts/"
+        self.uri1 = "/comments/"
+        self.uri2 = "/comment_create/"
         self.owner = self.setup_user()
         self.test_post = Post.objects.create(
             title="Any post's title", content="Any post's description", owner=self.owner
@@ -202,7 +204,7 @@ class TestCommentListCreate(APITestCase):
     def test_create_comment(self):
         self.client.force_authenticate(user=self.owner)
         response = self.client.post(
-            self.uri1,
+            f"{self.uri}{self.test_post.pk}{self.uri2}",
             {
                 "owner": self.owner.id,
                 "post": self.test_post.id,
@@ -215,7 +217,7 @@ class TestCommentListCreate(APITestCase):
 
     def test_create_comment_unauthorized(self):
         response = self.client.post(
-            self.uri1,
+            f"{self.uri}{self.test_post.pk}{self.uri2}",
             {
                 "owner": self.owner.id,
                 "post": self.test_post.id,
@@ -231,8 +233,9 @@ class TestCommentListCreate(APITestCase):
 class TestCommentDetail(APITestCase):
     def setUp(self):
         self.client = APIClient()
-        self.uri = "/api/comments/"
-        self.uri1 = "/api/comment_like_unlike/"
+        self.uri = "/api/posts/"
+        self.uri1 = "/comments/"
+        # self.uri1 = "/api/comment_like_unlike/"
         self.owner = self.setup_user()
         self.test_post = Post.objects.create(
             title="Any post's title", content="Any post's description", owner=self.owner
@@ -240,9 +243,9 @@ class TestCommentDetail(APITestCase):
         self.test_comment = Comment.objects.create(
             comment_body="Some post's comment", owner=self.owner, post=self.test_post
         )
-        self.test_like_or_unlike = CommentUserReaction.objects.create(
-            owner=self.owner, comment=self.test_comment, like=False, unlike=False
-        )
+        # self.test_like_or_unlike = CommentUserReaction.objects.create(
+        #     owner=self.owner, comment=self.test_comment, like=False, unlike=False
+        # )
 
     @staticmethod
     def setup_user():
@@ -252,7 +255,9 @@ class TestCommentDetail(APITestCase):
 
     def test_retrieve_comment(self):
         self.client.force_authenticate(user=self.owner)
-        response = self.client.get(f"{self.uri}{self.test_comment.pk}/")
+        response = self.client.get(
+            f"{self.uri}{self.test_post.pk}{self.uri1}{self.test_comment.pk}/"
+        )
 
         assert response.status_code == 200
 
@@ -261,14 +266,16 @@ class TestCommentDetail(APITestCase):
         assert response_not_found.status_code == 404
 
     def test_retrieve_comment_unauthorized(self):
-        response = self.client.get(f"{self.uri}{self.test_comment.pk}/")
+        response = self.client.get(
+            f"{self.uri}{self.test_post.pk}{self.uri1}{self.test_comment.pk}/"
+        )
 
         assert response.status_code == 401
 
     def test_update_comment(self):
         self.client.force_authenticate(user=self.owner)
         response = self.client.put(
-            f"{self.uri}{self.test_comment.pk}/",
+            f"{self.uri}{self.test_post.pk}{self.uri1}{self.test_comment.pk}/",
             {
                 "owner": self.owner.id,
                 "post": self.test_post.id,
@@ -293,7 +300,7 @@ class TestCommentDetail(APITestCase):
 
     def test_update_comment_unauthorized(self):
         response = self.client.put(
-            f"{self.uri}{self.test_comment.pk}/",
+            f"{self.uri}{self.test_post.pk}{self.uri1}{self.test_comment.pk}/",
             {
                 "owner": self.owner.id,
                 "post": self.test_post.id,
@@ -306,29 +313,33 @@ class TestCommentDetail(APITestCase):
 
     def test_destroy_comment(self):
         self.client.force_authenticate(user=self.owner)
-        response = self.client.delete(f"{self.uri}{self.test_comment.pk}/")
+        response = self.client.delete(
+            f"{self.uri}{self.test_post.pk}{self.uri1}{self.test_comment.pk}/"
+        )
 
         assert response.status_code == 204
 
-        response_not_found = self.client.delete(f"{self.uri}{self.test_comment.pk}/")
+        response_not_found = self.client.delete(
+            f"{self.uri}{self.test_post.pk}{self.uri1}{self.test_comment.pk}/"
+        )
 
         assert response_not_found.status_code == 404
 
-    def test_update_comment_like_unlike(self):
-        self.client.force_authenticate(user=self.owner)
-        response = self.client.post(
-            f"{self.uri1}{self.test_comment.pk}/",
-            {"like": True, "unlike": False},
-            format="json",
-        )
-
-        assert response.status_code == 200
-
-    def test_update_comment_like_unlike_unauthorized(self):
-        response = self.client.post(
-            f"{self.uri1}{self.test_comment.pk}/",
-            {"like": True, "unlike": False},
-            format="json",
-        )
-
-        assert response.status_code == 401
+    # def test_update_comment_like_unlike(self):
+    #     self.client.force_authenticate(user=self.owner)
+    #     response = self.client.post(
+    #         f"{self.uri1}{self.test_comment.pk}/",
+    #         {"like": True, "unlike": False},
+    #         format="json",
+    #     )
+    #
+    #     assert response.status_code == 200
+    #
+    # def test_update_comment_like_unlike_unauthorized(self):
+    #     response = self.client.post(
+    #         f"{self.uri1}{self.test_comment.pk}/",
+    #         {"like": True, "unlike": False},
+    #         format="json",
+    #     )
+    #
+    #     assert response.status_code == 401
