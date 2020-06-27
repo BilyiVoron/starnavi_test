@@ -57,6 +57,8 @@ class PostDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    lookup_field = "pk"
+    lookup_url_kwarg = "post_pk"
 
     def get_queryset(self):
         return Post.objects.filter(owner=self.request.user)
@@ -80,7 +82,7 @@ class CommentListApiView(GenericViewSet, ListAPIView):
     ordering_fields = ["post"]
 
     def get_queryset(self):
-        return Comment.objects.filter(post_id=self.kwargs.get("pk", None))
+        return Comment.objects.filter(post_id=self.kwargs.get("post_pk", None))
 
 
 class CommentCreateApiView(GenericViewSet, CreateAPIView):
@@ -93,7 +95,7 @@ class CommentCreateApiView(GenericViewSet, CreateAPIView):
     serializer_class = CommentCreateSerializer
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user, post_id=self.kwargs.get("pk", None))
+        serializer.save(owner=self.request.user, post_id=self.kwargs.get("post_pk", None))
 
 
 class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
@@ -104,6 +106,8 @@ class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    lookup_field = "pk"
+    lookup_url_kwarg = "comment_pk"
 
     def get_queryset(self):
         return Comment.objects.filter(owner=self.request.user)
@@ -119,20 +123,20 @@ class LikeUnlikeApiView(
 ):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
+    lookup_field = "pk"
+    lookup_url_kwarg = "post_pk"
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
-        print(self.kwargs.get("c_pk"))  # TODO
-        print(self.kwargs.get("pk"))
-        if self.kwargs.get("c_pk"):
-            return Comment.objects.filter(id=self.kwargs.get("c_pk", None))
+        if self.kwargs.get("comment_pk"):
+            return Comment.objects.filter(id=self.kwargs.get("comment_pk", None))
         else:
-            return Post.objects.filter(id=self.kwargs.get("pk", None))
+            return Post.objects.filter(id=self.kwargs.get("post_pk", None))
 
     @action(methods=["POST"], detail=True)
-    def like(self, request, pk):
+    def like(self, request, post_pk):
         """
         Likes "obj".
         """
@@ -142,7 +146,7 @@ class LikeUnlikeApiView(
         return Response(f'You have just liked "{obj}"')
 
     @action(methods=["POST"], detail=True)
-    def unlike(self, request, pk):
+    def unlike(self, request, post_pk):
         """
         Remove like from "obj".
         """
@@ -151,7 +155,7 @@ class LikeUnlikeApiView(
         return Response(f'You have just removed your like from "{obj}"')
 
     @action(detail=False)
-    def fans(self, request, pk):
+    def fans(self, request, post_pk):
         """
         Get all users which have liked "obj".
         """
