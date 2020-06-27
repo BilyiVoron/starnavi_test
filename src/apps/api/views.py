@@ -66,6 +66,7 @@ class PostDetailApiView(RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         request.data["owner"] = self.request.user.id
         response = super().update(request, *args, **kwargs)
+
         return response
 
 
@@ -115,10 +116,11 @@ class CommentDetailApiView(RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         request.data["owner"] = self.request.user.id
         response = super().update(request, *args, **kwargs)
+
         return response
 
 
-class LikeUnlikeApiView(
+class PostLikeUnlikeApiView(
     GenericViewSet, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 ):
     queryset = Like.objects.all()
@@ -130,13 +132,10 @@ class LikeUnlikeApiView(
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
-        if self.kwargs.get("comment_pk"):
-            return Comment.objects.filter(id=self.kwargs.get("comment_pk", None))
-        else:
-            return Post.objects.filter(id=self.kwargs.get("post_pk", None))
+        return Post.objects.filter(id=self.kwargs.get("post_pk", None))
 
     @action(methods=["POST"], detail=True)
-    def like(self, request, post_pk):
+    def like(self, request, **kwargs):
         """
         Likes "obj".
         """
@@ -146,7 +145,53 @@ class LikeUnlikeApiView(
         return Response(f'You have just liked "{obj}"')
 
     @action(methods=["POST"], detail=True)
-    def unlike(self, request, post_pk):
+    def unlike(self, request, **kwargs):
+        """
+        Remove like from "obj".
+        """
+        obj = self.get_object()
+        services.remove_like(obj, request.user)
+
+        return Response(f'You have just removed your like from "{obj}"')
+
+    @action(detail=False)
+    def fans(self, request, **kwargs):
+        """
+        Get all users which have liked "obj".
+        """
+        obj = self.get_object()
+        fans = services.get_fans(obj)
+        serializer = FanSerializer(fans, many=True)
+
+        return Response(serializer.data)
+
+
+class CommentLikeUnlikeApiView(
+    GenericViewSet, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
+):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    lookup_field = "pk"
+    lookup_url_kwarg = "comment_pk"
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def get_queryset(self):
+        return Comment.objects.filter(id=self.kwargs.get("comment_pk", None))
+
+    @action(methods=["POST"], detail=True)
+    def like(self, request, **kwargs):
+        """
+        Likes "obj".
+        """
+        obj = self.get_object()
+        services.add_like(obj, request.user)
+
+        return Response(f'You have just liked "{obj}"')
+
+    @action(methods=["POST"], detail=True)
+    def unlike(self, request, **kwargs):
         """
         Remove like from "obj".
         """
@@ -155,11 +200,12 @@ class LikeUnlikeApiView(
         return Response(f'You have just removed your like from "{obj}"')
 
     @action(detail=False)
-    def fans(self, request, post_pk):
+    def fans(self, request, **kwargs):
         """
         Get all users which have liked "obj".
         """
         obj = self.get_object()
         fans = services.get_fans(obj)
         serializer = FanSerializer(fans, many=True)
+
         return Response(serializer.data)

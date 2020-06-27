@@ -7,40 +7,33 @@ from apps.api.views import (
     CommentListApiView,
     CommentCreateApiView,
     CommentDetailApiView,
-    LikeUnlikeApiView,
+    PostLikeUnlikeApiView,
+    CommentLikeUnlikeApiView,
 )
 
 app_name = "api"
 
 urlpatterns = [
-    path(
-        "posts/",
-        PostListApiView.as_view({"get": "list"}),
-        name="posts_list"
-    ),
+    path("posts/", PostListApiView.as_view({"get": "list"}), name="posts_list"),
     path(
         "post_create/",
         PostCreateApiView.as_view({"post": "create"}),
         name="create_list",
     ),
-    path(
-        "posts/<int:post_pk>/",
-        PostDetailApiView.as_view(),
-        name="post_detail"
-    ),
+    path("posts/<int:post_pk>/", PostDetailApiView.as_view(), name="post_detail"),
     path(
         "posts/<int:post_pk>/like/",
-        LikeUnlikeApiView.as_view({"post": "like"}),
+        PostLikeUnlikeApiView.as_view({"post": "like"}),
         name="post_like",
     ),
     path(
         "posts/<int:post_pk>/unlike/",
-        LikeUnlikeApiView.as_view({"post": "unlike"}),
+        PostLikeUnlikeApiView.as_view({"post": "unlike"}),
         name="post_unlike",
     ),
     path(
         "posts/<int:post_pk>/fans/",
-        LikeUnlikeApiView.as_view({"get": "fans"}),
+        PostLikeUnlikeApiView.as_view({"get": "fans"}),
         name="post_fans",
     ),
     path(
@@ -58,24 +51,19 @@ urlpatterns = [
         CommentDetailApiView.as_view(),
         name="comment_detail",
     ),
-    # path(
-    #     "posts/<int:pk>/comments/<int:c_pk>/like/",
-    #     LikeUnlikeApiView.as_view({"post": "like"}),
-    #     name="comment_like",
-    # ),
     path(
         "posts/<int:post_pk>/comments/<int:comment_pk>/like/",
-        LikeUnlikeApiView.as_view({"post": "like"}),
+        CommentLikeUnlikeApiView.as_view({"post": "like"}),
         name="comment_like",
     ),
     path(
         "posts/<int:post_pk>/comments/<int:comment_pk>/unlike/",
-        LikeUnlikeApiView.as_view({"post": "unlike"}),
+        CommentLikeUnlikeApiView.as_view({"post": "unlike"}),
         name="comment_unlike",
     ),
     path(
         "posts/<int:post_pk>/comments/<int:comment_pk>/fans/",
-        LikeUnlikeApiView.as_view({"get": "fans"}),
+        CommentLikeUnlikeApiView.as_view({"get": "fans"}),
         name="comment_fans",
     ),
 ]
