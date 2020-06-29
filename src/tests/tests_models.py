@@ -88,7 +88,7 @@ class TestLikeModel(TestCase):
         self.post_obj_type = ContentType.objects.get_for_model(self.test_post)
         self.comment_obj_type = ContentType.objects.get_for_model(self.test_comment)
 
-    def test_add_reaction_to_post(self):
+    def test_add_like_to_post(self):
         baker.make(
             Like,
             content_type=self.post_obj_type,
@@ -98,7 +98,7 @@ class TestLikeModel(TestCase):
 
         assert f"You have just liked {self.test_post}"
 
-    def test_add_reaction_to_comment(self):
+    def test_add_like_to_comment(self):
         baker.make(
             Like,
             content_type=self.comment_obj_type,
@@ -107,3 +107,21 @@ class TestLikeModel(TestCase):
         )
 
         assert f"You have just liked {self.test_comment}"
+
+    def test_remove_like_from_post(self):
+        Like.objects.filter(
+            content_type=self.post_obj_type,
+            object_id=self.test_post.id,
+            owner=self.test_user,
+        ).delete()
+
+        assert f"You have just removed your like from {self.test_post}"
+
+    def test_remove_like_from_comment(self):
+        Like.objects.filter(
+            content_type=self.comment_obj_type,
+            object_id=self.test_comment.id,
+            owner=self.test_user,
+        ).delete()
+
+        assert f"You have just removed your like from {self.test_comment}"
